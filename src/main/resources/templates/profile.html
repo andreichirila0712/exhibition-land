@@ -6,13 +6,11 @@
 </head>
 <body>
     <p>Name: <span th:text="${name}">No name</span></p>
-    <td>
-        <span th:if="${avatarUrl}">
-        <img th:src="${avatarUrl}" alt="Profile Avatar"/>
-        </span>
-        <span th:if="${photoUrl}">
-        <img th:src="${photoUrl}" alt="Profile Photo"/>
-        </span>
-    </td>
+    <div th:if="${avatarUrl}">
+        <img th:src="${avatarUrl}" alt="Profile Avatar">
+    </div>
+    <div th:if="${picture}">
+        <img th:src="${picture}" alt="Profile Photo">
+    </div>
 </body>
 </html>

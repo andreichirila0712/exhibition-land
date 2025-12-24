@@ -11,24 +11,29 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/", "/user", "/error", "/webjars/**").permitAll();
+                    auth.requestMatchers("/", "/login", "/error", "/webjars/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .oauth2Login(auth -> {
-                    auth.loginPage("/user");
+                    auth.loginPage("/login");
+                    auth.userInfoEndpoint((userInfo) -> userInfo
+                            .userService(this.customOAuth2UserService));
                     auth.successHandler((request, response, authentication) -> {
-                        if (request.getRequestURI().contains("github"))
-                            response.sendRedirect("/profile-github");
-                        else if (request.getRequestURI().contains("google"))
-                            response.sendRedirect("/profile-google");
+                        response.sendRedirect("/profile");
                     });
                 })
                 .build();
     }
+
 }

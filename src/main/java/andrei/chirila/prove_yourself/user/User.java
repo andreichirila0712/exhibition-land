@@ -27,6 +27,13 @@ public class User {
 
     public User() {}
 
+    public User(String provider, String providerId, String email, String name) {
+        this.provider = provider;
+        this.providerId = providerId;
+        this.email = email;
+        this.name = name;
+    }
+
     public UUID getUserId() {
         return userId;
     }
