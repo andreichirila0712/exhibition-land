@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+    <p>Name: <span th:text="${name}">No name</span></p>
+    <td>
+        <span th:if="${avatarUrl}">
+        <img th:src="${avatarUrl}" alt="Profile Avatar"/>
+        </span>
+        <span th:if="${photoUrl}">
+        <img th:src="${photoUrl}" alt="Profile Photo"/>
+        </span>
+    </td>
+</body>
+</html>
