@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/profile_style.css" type="text/css" th:href="@{/profile_style.css}">
+    <title>Profile</title>
+</head>
+<body>
+    <div class="hero">
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Presentations</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+            <div th:if="${avatarUrl}">
+                <img th:src="${avatarUrl}" alt="Profile Avatar" class="user-img" onclick="toggleMenu()">
+            </div>
+            <div th:if="${picture}">
+                <img th:src="${picture}" alt="Profile Photo" class="user-img" onclick="toggleMenu()">
+            </div>
+            <div class="sub-menu-wrap" id="subMenu">
+                <div class="sub-menu">
+                    <div class="user-info">
+                        <div th:if="${avatarUrl}">
+                            <img th:src="${avatarUrl}" alt="Profile Avatar" class="user-img">
+                        </div>
+                        <div th:if="${picture}">
+                            <img th:src="${picture}" alt="Profile Photo" class="user-img">
+                        </div>
+                        <h3><span th:text="${name}">Profile Username</span></h3>
+                    </div>
+                    <hr>
+                    <a href="#" class="sub-menu-link">
+                        <p>Edit Profile</p>
+                        <span>></span>
+                    </a>
+                    <a href="#" class="sub-menu-link">
+                        <p>Settings & Privacy</p>
+                        <span>></span>
+                    </a>
+                    <a href="#" class="sub-menu-link">
+                        <p>Help & Support</p>
+                        <span>></span>
+                    </a>
+                    <a href="#" class="sub-menu-link">
+                        <p>Logout</p>
+                        <span>></span>
+                    </a>
+
+                </div>
+            </div>
+            <script>
+                let subMenu = document.getElementById('subMenu');
+
+                function toggleMenu() {
+                    subMenu.classList.toggle("open-menu");
+                }
+            </script>
+        </nav>
+    </div>
+</body>
+</html>

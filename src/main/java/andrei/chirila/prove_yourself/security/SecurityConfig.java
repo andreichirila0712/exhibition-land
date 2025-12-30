@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
@@ -20,8 +21,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/", "/login", "/error", "/webjars/**").permitAll();
+                    auth.requestMatchers("/", "/login", "/error", "/webjars/**", "/*.css").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
@@ -30,7 +32,7 @@ public class SecurityConfig {
                     auth.userInfoEndpoint((userInfo) -> userInfo
                             .userService(this.customOAuth2UserService));
                     auth.successHandler((request, response, authentication) -> {
-                        response.sendRedirect("/profile");
+                        response.sendRedirect("/home");
                     });
                 })
                 .build();

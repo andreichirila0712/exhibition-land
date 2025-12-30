@@ -21,7 +21,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
         String providerId = switch (provider) {
-            case "github" -> oAuth2User.getAttribute("id") + "";
+            case "github" -> Integer.toString(oAuth2User.getAttribute("id"));
             case "google" -> oAuth2User.getAttribute("sub");
             default -> "";
         };

@@ -10,10 +10,10 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "auth/login";
     }
 
-    @GetMapping("/profile")
+    @GetMapping("/home")
     public String profile(OAuth2AuthenticationToken token, Model model) {
         if (token.getPrincipal() == null) throw  new NullPointerException();
 
@@ -23,7 +23,7 @@ public class AuthController {
             case "google" -> model.addAttribute("picture", token.getPrincipal().getAttribute("picture"));
         }
 
-        return "profile";
+        return "user/home";
     }
 
 
