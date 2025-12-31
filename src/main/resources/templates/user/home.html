@@ -45,11 +45,9 @@
                         <p>Help & Support</p>
                         <span>></span>
                     </a>
-                    <a href="#" class="sub-menu-link">
-                        <p>Logout</p>
-                        <span>></span>
-                    </a>
-
+                    <form th:action="@{/logout}" method="post" class="sub-menu-link">
+                        <button>Logout</button>
+                    </form>
                 </div>
             </div>
             <script>
