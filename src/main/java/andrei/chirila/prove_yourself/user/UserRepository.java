@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface UserRepository extends CrudRepository<User, UUID> {
     Optional<User> findByProviderId(String providerId);
+    void deleteByProviderId(String providerId);
 }

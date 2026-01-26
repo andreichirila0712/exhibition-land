@@ -1,12 +1,20 @@
 package andrei.chirila.prove_yourself.security;
 
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import andrei.chirila.prove_yourself.user.User;
+import andrei.chirila.prove_yourself.user.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class AuthController {
+    private final UserService userService;
+
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/login")
     public String login() {
@@ -14,14 +22,12 @@ public class AuthController {
     }
 
     @GetMapping("/home")
-    public String profile(OAuth2AuthenticationToken token, Model model) {
-        if (token.getPrincipal() == null) throw  new NullPointerException();
+    public String profile(@AuthenticationPrincipal OAuth2User oAuth2User, Model model) {
+        if (oAuth2User == null) throw  new NullPointerException();
 
-        model.addAttribute("name", token.getPrincipal().getAttribute("name"));
-        switch (token.getAuthorizedClientRegistrationId()) {
-            case "github" -> model.addAttribute("avatarUrl", token.getPrincipal().getAttribute("avatar_url"));
-            case "google" -> model.addAttribute("picture", token.getPrincipal().getAttribute("picture"));
-        }
+        User user = this.userService.retrieveCurrentUser(oAuth2User.getName());
+        model.addAttribute("name", user.getName());
+        model.addAttribute("userPhoto", this.userService.getProfilePictureUrl(user.getProviderId()));
 
         return "user/home";
     }

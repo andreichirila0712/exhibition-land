@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="/css/output.css" type="text/css" th:href="@{/css/output.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <title>Profile</title>
+</head>
+<body>
+<div class="navbar bg-base-200 shadow-sm">
+    <div class="flex-1">
+        <a href="/home" class="btn btn-ghost text-base-content text-xl">Home</a>
+    </div>
+    <div class="flex gap-2">
+        <div class="w-10 rounde-box">
+            <img th:src="${profilePicture}" alt="avatar"/>
+        </div>
+        <h2 type="text" th:text="${name}"></h2>
+    </div>
+</div>
+<div class="relative min-h-screen flex items-center justify-center bg-base-200 overflow-hidden">
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+        <legend class="fieldset-legend">Profile</legend>
+        <legend class="label">Name</legend>
+        <div class="join flex">
+            <input type="text" class="input join-item" id="userName" th:value="${name}"/>
+            <button class="btn join-item" onclick="updateProfile()">update</button>
+        </div>
+        <legend class="label">Email</legend>
+        <div class="join flex">
+            <input type="text" class="input join-item" id="userEmail" th:value="${email}"/>
+            <button class="btn join-item" onclick="updateProfile()">update</button>
+        </div>
+        <legend class="label">Profile Picture</legend>
+        <form th:action="@{/profile/photo/update}" method="post" enctype="multipart/form-data">
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Upload an image (JPG, JPEG, PNG)</legend>
+                <form method="post" enctype="multipart/form-data">
+                    <input type="file" id="file" name="file" class="file-input" onchange="return fileValidation()"
+                           accept=".jpg, .jpeg, .png"/>
+                    <div id="preview"></div>
+                    <label class="label">Max size 2MB</label>
+                    <button class="btn" id="updatePhotoButton" type="button" onclick="updatePhoto()">Upload</button>
+                </form>
+            </fieldset>
+        </form>
+        <button onclick="confirmation_modal.showModal()" class="btn btn-active btn-error">Delete account</button>
+        <dialog id="confirmation_modal" class="modal modal-bottom sm:modal-middle">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold text-center">Are you sure?</h3>
+                <form method="dialog">
+                    <div class="flex justify-between">
+                        <button class="btn join-item justify-end">Cancel</button>
+                        <button onclick="confirmDeletion()" class="btn btn-error join-item ">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+    </fieldset>
+</div>
+<script>
+    let data = {};
+
+    function updateProfile(e) {
+        data.name = document.getElementById("userName").value;
+        data.email = document.getElementById("userEmail").value;
+
+        $.ajax({
+            url: "/profile/update",
+            headers: {
+                [$('meta[name="_csrf_header"]').attr('content')]: $('meta[name="_csrf"]').attr('content')
+            },
+            type: "PATCH",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            dataType: 'html',
+            cache: false,
+            success: function (response) {
+                window.location.reload();
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+    function fileValidation() {
+        var fileInput = document.getElementById('file');
+        var filePath = fileInput.value;
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Invalid image type');
+            fileInput.value = '';
+            return false;
+        } else {
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+                if (fileInput.files[0].size > 1048576) {
+                    document.getElementById('preview').innerHTML = '<div role="alert" class="alert alert-warning alert-soft">' +
+                        '<span>Warning: Image size is too big (< 1MB required)!</span></div>'
+                    return false;
+                }
+                reader.onload = function (e) {
+                    document.getElementById('preview').innerHTML = '<img src="' + e.target.result + '"/>';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    }
+
+    function updatePhoto() {
+        var data = new FormData(jQuery('form')[0]);
+
+        if (document.getElementById('file').files.length === 0) {
+            document.getElementById('preview').innerHTML = '<div role="alert" class="alert alert-warning alert-soft">' +
+                '<span>Warning: No image selected!</span></div>';
+            return;
+        }
+
+        $.ajax({
+            url: "/profile/photo/update",
+            headers: {
+                [$('meta[name="_csrf_header"]').attr('content')]: $('meta[name="_csrf"]').attr('content')
+            },
+            type: "POST",
+            data: data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (response) {
+                window.location.reload();
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+
+    function confirmDeletion() {
+        $.ajax({
+            url: "/profile/delete",
+            headers: {
+                [$('meta[name="_csrf_header"]').attr('content')]: $('meta[name="_csrf"]').attr('content')
+            },
+            type: "DELETE",
+            success: function (response) {
+                window.location.href = "/login";
+            },
+            error: function (response) {
+                console.log(response);
+            }
+        });
+    }
+</script>
+</body>
+</html>

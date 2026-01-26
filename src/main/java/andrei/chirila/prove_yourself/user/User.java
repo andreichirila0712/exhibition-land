@@ -24,14 +24,17 @@ public class User {
     private String email;
     @Column(name = "name")
     private String name;
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
 
     public User() {}
 
-    public User(String provider, String providerId, String email, String name) {
+    public User(String provider, String providerId, String email, String name, String profilePictureUrl) {
         this.provider = provider;
         this.providerId = providerId;
         this.email = email;
         this.name = name;
+        this.profilePictureUrl = profilePictureUrl;
     }
 
     public UUID getUserId() {
@@ -68,5 +71,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
     }
 }

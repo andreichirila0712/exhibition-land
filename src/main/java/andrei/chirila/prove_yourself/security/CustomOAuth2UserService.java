@@ -25,10 +25,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             case "google" -> oAuth2User.getAttribute("sub");
             default -> "";
         };
+
+        if (this.userService.retrieveCurrentUser(providerId) != null) {
+            return oAuth2User;
+        }
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+        String profilePictureUrl = switch (provider) {
+            case "github" -> oAuth2User.getAttribute("avatar_url");
+            case "google" -> oAuth2User.getAttribute("picture");
+            default -> "";
+        };
 
-        this.userService.saveUserPostOAuthLogin(provider, providerId, email, name);
+        this.userService.saveUserPostOAuthLogin(provider, providerId, email, name, profilePictureUrl);
 
         return oAuth2User;
     }

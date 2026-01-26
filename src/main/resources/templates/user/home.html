@@ -1,63 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/profile_style.css" type="text/css" th:href="@{/profile_style.css}">
-    <title>Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=1.0">
+    <link rel="stylesheet" href="/css/output.css" type="text/css" th:href="@{/css/output.css}">
+    <title>Home</title>
 </head>
 <body>
-    <div class="hero">
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Presentations</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="#">Logout</a></li>
-            </ul>
-            <div th:if="${avatarUrl}">
-                <img th:src="${avatarUrl}" alt="Profile Avatar" class="user-img" onclick="toggleMenu()">
-            </div>
-            <div th:if="${picture}">
-                <img th:src="${picture}" alt="Profile Photo" class="user-img" onclick="toggleMenu()">
-            </div>
-            <div class="sub-menu-wrap" id="subMenu">
-                <div class="sub-menu">
-                    <div class="user-info">
-                        <div th:if="${avatarUrl}">
-                            <img th:src="${avatarUrl}" alt="Profile Avatar" class="user-img">
-                        </div>
-                        <div th:if="${picture}">
-                            <img th:src="${picture}" alt="Profile Photo" class="user-img">
-                        </div>
-                        <h3><span th:text="${name}">Profile Username</span></h3>
-                    </div>
-                    <hr>
-                    <a href="#" class="sub-menu-link">
-                        <p>Edit Profile</p>
-                        <span>></span>
-                    </a>
-                    <a href="#" class="sub-menu-link">
-                        <p>Settings & Privacy</p>
-                        <span>></span>
-                    </a>
-                    <a href="#" class="sub-menu-link">
-                        <p>Help & Support</p>
-                        <span>></span>
-                    </a>
-                    <form th:action="@{/logout}" method="post" class="sub-menu-link">
-                        <button>Logout</button>
-                    </form>
+<div class="navbar bg-base-200 shadow-sm">
+    <div class="flex-1">
+        <a href="/home" class="btn btn-ghost text-base-content text-xl">Home</a>
+    </div>
+    <div class="flex gap-2">
+        <a href="/projects" class="btn btn-ghost text-base-content text-xl">Projects</a>
+        <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto"/>
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                <div class="w-10 rounded-full">
+                    <img th:src="${userPhoto}" alt="avatar"/>
                 </div>
             </div>
-            <script>
-                let subMenu = document.getElementById('subMenu');
-
-                function toggleMenu() {
-                    subMenu.classList.toggle("open-menu");
-                }
-            </script>
-        </nav>
+            <ul tabindex="-1"
+                class="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                <li><a href="/profile">Profile</a></li>
+                <li><a>Settings</a></li>
+                <li><form th:action="@{/logout}" method="post">
+                    <button style="background: none!important; border: none; padding: 0!important; cursor: pointer;">Logout</button>
+                </form>
+                </li>
+            </ul>
+        </div>
     </div>
+</div>
 </body>
 </html>
