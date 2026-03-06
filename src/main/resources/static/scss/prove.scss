@@ -1,0 +1,119 @@
+@import "../../../../../node_modules/spectre.css/src/variables";
+@import "../../../../../node_modules/spectre.css/src/mixins";
+@import "../../../../../node_modules/spectre.css/src/spectre";
+@import "../../../../../node_modules/spectre.css/src/icons/icons-core";
+@import "../../../../../node_modules/spectre.css/src/icons/icons-navigation";
+@import "../../../../../node_modules/spectre.css/src/icons/icons-action";
+
+.btn-gh {
+  background-color: #303742;
+  color: #ffffff !important;
+  border-color: #303742;
+}
+
+.btn-gh:hover {
+  background-color: #303742;
+  color: #ffffff !important;
+}
+
+.btn-go {
+  background-color: #f7f8f9;
+  color: #303742 !important;
+  border-color: #e5e5e5;
+}
+
+.btn-go:hover {
+  background-color: #f7f8f9;
+  color: #303742 !important;
+  border-color: #e5e5e5;
+}
+
+.middle-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.btn-delete {
+  background-color: #ff6b81;
+  color: #ffffff !important;
+  border-color: #ff6b81;
+}
+
+.bottom-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.toast-sm {
+  width: 200px;
+  height: 40px;
+}
+
+.toast-btn-closing {
+  background-color: #3b4351;
+  color: #ffffff !important;
+  border-color: #3b4351;
+  animation: closing 0.3s ease-out forwards;
+  pointer-events: none;
+}
+
+.navbar-bg {
+  background-color: #3b4351;
+}
+
+.btn-home {
+  background-color: #3b4351;
+  color: #ffffff !important;
+  border-color: #3b4351;
+}
+
+.btn-home:hover {
+  background-color: #3b4351;
+  color: #ffffff !important;
+  border-color: #3b4351;
+}
+
+.btn-add {
+  background-color: black;
+  color: #ffffff;
+  border-color: black;
+}
+
+.btn-add:hover {
+  background-color: black;
+  color: #ffffff;
+  border-color: black;
+}
+
+.btn-patch {
+  background-color: #bcc3ce;
+  color: #455060;
+  border-color: #bcc3ce;
+}
+
+.btn-patch:hover {
+  background-color: #bcc3ce;
+  color: #455060;
+  border-color: #bcc3ce;
+}
+//#add-presentation-icon {
+//  .icon-plus {
+//    background-color: #ffffff;
+//    color: #3b4351;
+//  }
+//}
+
+@keyframes closing {
+  from {
+    opacity: 1; transform: scale(1);
+  }
+  to {
+    opacity: 0; transform: scale(0.9);
+  }
+}
+
+
