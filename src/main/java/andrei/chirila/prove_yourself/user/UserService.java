@@ -1,21 +1,11 @@
 package andrei.chirila.prove_yourself.user;
 
+import andrei.chirila.prove_yourself.utils.S3Utility;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3Configuration;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,17 +13,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final S3Client s3Client;
+    private final S3Utility s3Utility;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, S3Utility s3Utility) {
         this.userRepository = userRepository;
-        this.s3Client = S3Client.builder()
-                .credentialsProvider(ProfileCredentialsProvider.create())
-                .httpClient(UrlConnectionHttpClient.create())
-                .serviceConfiguration(S3Configuration.builder()
-                        .chunkedEncodingEnabled(false)
-                        .build())
-                .build();
+        this.s3Utility = s3Utility;
     }
 
     @Transactional
@@ -65,33 +49,17 @@ public class UserService {
     }
 
     @Transactional
-    public String uploadProfilePicture(String providerId, MultipartFile image) throws IOException {
+    public String uploadProfilePicture(String providerId, MultipartFile image) {
         Optional<User> user = this.userRepository.findByProviderId(providerId);
         String urlToUploadedPhoto = "";
 
         if (user.isPresent()) {
+            String objectName = user.get().getUserId().toString();
             String bucketName = "garage-bucket";
-            String contentType = image.getContentType();
-            String extension = switch(contentType) {
-                case "image/png" -> ".png";
-                case "image/jpeg" -> ".jpg";
-                default -> ".jpeg";
-            };
-            String objectName = user.get().getUserId() + extension;
-            String fileName = image.getOriginalFilename();
-            IO.println(objectName + " " + contentType + " " + fileName);
-            PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .contentType(contentType)
-                    .key(objectName)
-                    .build();
-            RequestBody body = RequestBody.fromBytes(image.getBytes());
 
-            s3Client.putObject(request, body);
-            s3Client.close();
-            user.get().setProfilePictureUrl(objectName);
+            user.get().setProfilePictureUrl(this.s3Utility.uploadFile(bucketName, objectName, image));
 
-            urlToUploadedPhoto = createPresignedUrlToPhoto(bucketName, objectName);
+            urlToUploadedPhoto = this.s3Utility.createPresignedUrl(bucketName, objectName);
         }
 
         return urlToUploadedPhoto;
@@ -106,7 +74,7 @@ public class UserService {
                 return user.get().getProfilePictureUrl();
             }
 
-            urlToUploadedPhoto = createPresignedUrlToPhoto("garage-bucket", user.get().getProfilePictureUrl());
+            urlToUploadedPhoto = this.s3Utility.createPresignedUrl("garage-bucket", user.get().getProfilePictureUrl());
         }
 
         return urlToUploadedPhoto;
@@ -115,23 +83,5 @@ public class UserService {
     @Transactional
     public void deleteUserProfile(String providerId) {
         this.userRepository.deleteByProviderId(providerId);
-    }
-
-    private String createPresignedUrlToPhoto(String bucketName, String objectName) {
-        try (S3Presigner presigner = S3Presigner.create()) {
-            GetObjectRequest objectRequest = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(objectName)
-                    .build();
-
-            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(10))
-                    .getObjectRequest(objectRequest)
-                    .build();
-
-            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
-
-            return presignedRequest.url().toExternalForm();
-        }
     }
 }

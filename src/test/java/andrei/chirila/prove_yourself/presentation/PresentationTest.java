@@ -44,7 +44,7 @@ public class PresentationTest {
         Mockito.when(s3Utility.uploadFile(any(), any(), any())).thenReturn("thumbnail-user123.jpg");
         Mockito.when(presentationRepository.save(any())).thenReturn(new Presentation("Test Presentation", "thumbnail-user123.jpg", "https://test.com", "Test Description", new User(USER_ID, "u1", "u1", "u1", "u1")));
 
-        Presentation savedPresentation = presentationService.savePresentation(USER_ID, presentationDTO, null);
+        Presentation savedPresentation = presentationService.createPresentation(USER_ID, presentationDTO, null);
 
         assertEquals("Test Presentation", savedPresentation.getName());
         assertEquals("Test Description", savedPresentation.getDescription());

@@ -1,0 +1,69 @@
+<div th:fragment="presentation-post-success" id="form-feedback" hx-swap-oob="true"
+     _="on load remove .active from #modal-id">
+    <div class="toast toast-success bottom-right toast-sm" id="success-popup">
+        <button class="btn btn-clear float-right" aria-label="Close" _="on click add .toast-btn-closing then wait 300ms then remove #success-popup"></button>
+        Presentation added!
+    </div>
+</div>
+<div th:fragment="presentation-post-modal" id="modal-post-form" hx-swap-oob="true" _="on load add .active to #modal-id">
+    <div class="modal" id="modal-id">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title h5 text-center">New presentation</div>
+            </div>
+            <div class="modal-body">
+                <div class="content">
+                    <form id="create-presentation-form" hx-encoding='multipart/form-data' hx-post='/presentation/post'>
+                        <div class="form-group">
+                            <label class="form-label" for="title">Title</label>
+                            <input class="form-input" type="text" id="title" name="title" required
+                                   placeholder="Just type something here, mate">
+
+                            <label class="form-label" for="description">Description</label>
+                            <textarea class="form-input" id="description" name="description" required
+                                      placeholder="A turbo potent description of your craft" rows="3"></textarea>
+
+                            <label class="form-label" for="link">Link</label>
+                            <input class="form-input" type="url" id="link" name="link" value="https://"
+                                   th:pattern="'[Hh][Tt][Tt][Pp][Ss]?:\/\/(?:(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)(?:\.(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)*(?:\.(?:[a-zA-Z\u00a1-\uffff]{2,}))(?::\d{2,5})?(?:\/[^\s]*)?'"
+                                   required>
+
+                            <label class="form-label" for="thumbnail">Thumbnail</label>
+                            <input class="form-input" type="file" id="thumbnail" name="thumbnail"
+                                   accept=".jpg, .jpeg, .png">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-left"
+                        th:_="'on click remove .active from #modal-id'">
+                    Close
+                </button>
+                <button type="submit" class="btn float-right"
+                        th:_="'on click call #create-presentation-form.requestSubmit()'">
+                    <i class="icon icon-upload"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:fragment="presentation-post-object" id="presentations-list" hx-swap-oob="afterbegin:#presentations-list">
+    <div class="card">
+        <div class="card-header">
+            <div id="presentation-name" class="card-title h5" th:text="${presentation.name}">No name found</div>
+        </div>
+
+        <div class="card-body">
+            <p th:text="${presentation.description}">No description found</p>
+            <a th:href="${presentation.link}">Project's source</a>
+        </div>
+
+        <div class="card-footer">
+            <button hx-confirm="Are you sure?" th:hx-delete="'/presentation/delete/' + ${presentation.name}" class="btn btn-delete" hx-target="#delete-feedback">
+                Delete
+            </button>
+            <button th:hx-get="'/presentation/patch-modal/' + ${presentation.name}" class="btn btn-patch" hx-target="#modal-patch-form"><i class="icon icon-edit"></i>Update</button>
+        </div>
+    </div>
+    <div class="divider"></div>
+</div>

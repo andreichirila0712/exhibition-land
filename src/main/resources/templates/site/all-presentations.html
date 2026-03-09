@@ -1,0 +1,19 @@
+<div th:fragment="all-presentations" id="presentations-list" hx-swap-oob="true">
+    <h2 class="text-center">Presentations</h2>
+    <div th:each="presentation : ${presentations}" class="card">
+        <div class="card-header">
+            <div id="presentation-name" class="card-title h5" th:text="${presentation.name}">No name found</div>
+        </div>
+
+        <div class="card-body">
+            <p th:text="${presentation.description}">No description found</p>
+            <a th:href="${presentation.link}">Project's source</a>
+        </div>
+
+        <div class="card-footer">
+            <button hx-confirm="Are you sure?" th:hx-delete="'/presentation/delete/' + ${presentation.name}"
+                    class="btn btn-delete">Remove
+            </button>
+        </div>
+    </div>
+</div>
