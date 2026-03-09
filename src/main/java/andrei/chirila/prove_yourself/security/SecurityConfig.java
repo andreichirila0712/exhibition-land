@@ -35,7 +35,7 @@ public class SecurityConfig {
                     auth.userInfoEndpoint((userInfo) -> userInfo
                             .userService(this.customOAuth2UserService));
                     auth.successHandler((request, response, authentication) -> {
-                        response.sendRedirect("/home");
+                        response.sendRedirect("/index");
                     });
                 })
                 .logout(logout -> {

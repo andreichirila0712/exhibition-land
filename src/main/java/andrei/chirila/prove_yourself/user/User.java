@@ -1,12 +1,15 @@
 package andrei.chirila.prove_yourself.user;
 
+import andrei.chirila.prove_yourself.presentation.Presentation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -26,6 +29,8 @@ public class User {
     private String name;
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
+    @OneToMany(mappedBy = "owner")
+    private Set<Presentation> presentations;
 
     public User() {}
 
@@ -79,5 +84,13 @@ public class User {
 
     public void setProfilePictureUrl(String profilePictureUrl) {
         this.profilePictureUrl = profilePictureUrl;
+    }
+
+    public Set<Presentation> getPresentations() {
+        return presentations;
+    }
+
+    public void setPresentations(Set<Presentation> presentations) {
+        this.presentations = presentations;
     }
 }

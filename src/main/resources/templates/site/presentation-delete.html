@@ -1,6 +1,6 @@
-<div th:fragment="presentation-delete">
-    <div class="toast-success">
-        <button class="btn btn-clear float-right"></button>
-        Presentation successfully deleted!
+<div th:fragment="presentation-delete-success" id="delete-feedback" hx-swap-oob="true">
+    <div class="toast toast-success bottom-right toast-sm" id="success-popup">
+        <button class="btn btn-clear float-right" aria-label="Close" _="on click add .toast-btn-closing then wait 300ms then remove #success-popup"></button>
+        Presentation deleted!
     </div>
 </div>

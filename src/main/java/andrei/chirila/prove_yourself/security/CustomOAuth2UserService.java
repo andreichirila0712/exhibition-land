@@ -37,6 +37,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             default -> "";
         };
 
+
+
         this.userService.saveUserPostOAuthLogin(provider, providerId, email, name, profilePictureUrl);
 
         return oAuth2User;

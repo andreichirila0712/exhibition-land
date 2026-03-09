@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="light">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="/css/output.css" type="text/css" th:href="@{/css/output.css}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <title th:value="${name}"></title>
+</head>
+<body>
+<div class="navbar bg-base-200 shadow-sm">
+    <div class="flex-1">
+        <a href="/home" class="btn btn-ghost text-base-content text-xl">Home</a>
+    </div>
+    <div class="flex gap-2">
+        <a href="/presentations" class="btn btn-ghost text-base-content text-xl">Presentations</a>
+    </div>
+</div>
+<div class="card lg:card-side bg-base-100 image-full w-96 shadow-sm">
+    <figure>
+        <img th:src="${thumbnail}" alt="Thumbnail"/>
+    </figure>
+    <div class="card-body">
+        <h2 class="card-title" th:text="${name}"></h2>
+        <h3 class="card-subtitle" th:text="${description}"></h3>
+        <div class="card-actions justify-end">
+            <button class="btn btn-primary">Download</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

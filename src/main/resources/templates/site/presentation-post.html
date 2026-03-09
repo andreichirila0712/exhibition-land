@@ -59,8 +59,8 @@
         </div>
 
         <div class="card-footer">
-            <button hx-confirm="Are you sure?" th:hx-delete="'/presentation/delete/' + ${presentation.name}" class="btn btn-delete">
-                Remove
+            <button hx-confirm="Are you sure?" th:hx-delete="'/presentation/delete/' + ${presentation.name}" class="btn btn-delete" hx-target="#delete-feedback">
+                Delete
             </button>
             <button th:hx-get="'/presentation/patch-modal/' + ${presentation.name}" class="btn btn-patch" hx-target="#modal-patch-form"><i class="icon icon-edit"></i>Update</button>
         </div>
