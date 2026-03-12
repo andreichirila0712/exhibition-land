@@ -29,7 +29,7 @@ public class UserService {
             logger.error("Username already exists", new UsernameAlreadyExistsException("Username already exists"));
         }
 
-        if (this.userRepository.emailAlreadyExists(user.email())) {
+        if (this.userRepository.existsByEmail(user.email())) {
             logger.error("Email already exists", new EmailAlreadyExistsException("Email already exists"));
         }
 

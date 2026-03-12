@@ -25,6 +25,7 @@ public class PresentationService {
         this.s3Utility = s3Utility;
     }
 
+    /*
     public Presentation retrievePresentation(String userId, String presentationName) {
         Optional<Presentation> presentation = this.repository.findPresentationByUserIdAndName(userId, presentationName);
 
@@ -50,7 +51,8 @@ public class PresentationService {
                 thumbnailUrl,
                 presentationDTO.link(),
                 presentationDTO.description(),
-                userService.retrieveCurrentUser(userId));
+                //userService.retrieveCurrentUser(userId)
+                new User("aa", "bb"));
 
         return this.repository.save(presentation);
     }
@@ -94,4 +96,6 @@ public class PresentationService {
 
         return responseDTOList;
     }
+
+     */
 }

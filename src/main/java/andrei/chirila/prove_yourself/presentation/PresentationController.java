@@ -31,6 +31,7 @@ public class PresentationController {
         this.service = service;
     }
 
+    /*
     @GetMapping("/presentation-dashboard")
     public String dashboard(@AuthenticationPrincipal OAuth2User user, Model model) {
         List<Presentation> presentations = this.service.retrieveAllPresentations(user.getName());
@@ -81,4 +82,6 @@ public class PresentationController {
         return FragmentsRendering.fragment("site/presentation-patch :: presentation-patch-success")
                 .build();
     }
+
+     */
 }

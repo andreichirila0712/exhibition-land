@@ -29,16 +29,16 @@ public class Presentation {
     private String description;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User owner;
+    private User user;
 
     public Presentation() {}
 
-    public Presentation(String name, String thumbnail, String link, String description, User owner) {
+    public Presentation(String name, String thumbnail, String link, String description, User user) {
         this.name = name;
         this.thumbnail = thumbnail;
         this.link = link;
         this.description = description;
-        this.owner = owner;
+        this.user = user;
     }
 
     public UUID getPresentationId() {
@@ -81,11 +81,11 @@ public class Presentation {
         this.description = description;
     }
 
-    public User getOwner() {
-        return owner;
+    public User getUser() {
+        return user;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setUser(User owner) {
+        this.user = owner;
     }
 }
