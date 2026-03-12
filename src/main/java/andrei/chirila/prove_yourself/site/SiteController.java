@@ -18,14 +18,18 @@ public class SiteController {
 
     @GetMapping("/index")
     public String index(@AuthenticationPrincipal OAuth2User loggedUser, Model model) {
-        User user = this.userService.retrieveCurrentUser(loggedUser.getName());
+        //User user = this.userService.retrieveCurrentUser(loggedUser.getName());
 
-        model.addAttribute("avatar", this.userService.getProfilePictureUrl(user.getProviderId()));
-        model.addAttribute("name", user.getName());
+        //model.addAttribute("avatar", this.userService.getProfilePictureUrl(user.getProviderId()));
+        //model.addAttribute("name", user.getName());
 
 
         return "index";
     }
 
+    @GetMapping("/welcome")
+    public String welcome() {
+        return "site/welcome";
+    }
 
 }

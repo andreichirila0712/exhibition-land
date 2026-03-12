@@ -27,6 +27,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    /*
     @GetMapping("/profile")
     public String profile(@AuthenticationPrincipal OAuth2User oAuth2User, Model model) {
         User user = this.userService.retrieveCurrentUser(oAuth2User.getName());
@@ -59,5 +60,7 @@ public class UserController {
 
         return ResponseEntity.ok().build();
     }
+
+     */
 
 }

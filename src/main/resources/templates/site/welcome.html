@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=1.0">
+    <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+    <link rel="stylesheet" href="/css/prove.css" type="text/css" th:href="@{/css/prove.css}">
+    <title>Welcome</title>
+</head>
+<body>
+    <div class="middle-center">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title h5 flex-centered">Login</div>
+            </div>
+
+            <div class="card-body">
+                <div class="form-group" hx-post="/auth/login">
+                    <label class="form-label" for="username">Username</label>
+                    <input class="form-input" type="text" id="username" name="username" required>
+                    <label class="form-label" for="password">Password</label>
+                    <input class="form-input" type="password" id="password" name="password" required>
+                    <button class="btn btn-primary float-right" type="submit">Login</button>
+                    <button class="btn btn-secondary float-left" hx-get="/auth/register">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

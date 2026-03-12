@@ -1,11 +1,11 @@
 package andrei.chirila.prove_yourself.user;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends CrudRepository<User, UUID> {
-    Optional<User> findByProviderId(String providerId);
-    void deleteByProviderId(String providerId);
+public interface UserRepository extends JpaRepository<User, UUID> {
+    User findByUsername(String username);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
 }
