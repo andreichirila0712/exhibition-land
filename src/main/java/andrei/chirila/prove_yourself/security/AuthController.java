@@ -1,36 +1,40 @@
 package andrei.chirila.prove_yourself.security;
 
-import andrei.chirila.prove_yourself.user.User;
+import andrei.chirila.prove_yourself.user.UserAuthenticationRequestDTO;
+import andrei.chirila.prove_yourself.user.UserRegistrationRequestDTO;
 import andrei.chirila.prove_yourself.user.UserService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthController {
-    private final UserService userService;
+    private final AuthService authService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "site/login";
+    @PostMapping("/login")
+    public String authenticateUser(@RequestBody UserAuthenticationRequestDTO user) {
+        Authentication authentication = this.authService.authenticate(user.username(), user.password());
+        UserDetails userDetails = this.authService.principal(authentication);
+
+        return this.authService.jwtToken(userDetails.getUsername());
     }
 
-    @GetMapping("/home")
-    public String profile(@AuthenticationPrincipal OAuth2User oAuth2User, Model model) {
-        if (oAuth2User == null) throw  new NullPointerException();
+    @PostMapping("/register")
+    public String registerUser(@RequestBody UserRegistrationRequestDTO user) {
+        this.authService.save(user);
 
-        User user = this.userService.retrieveCurrentUser(oAuth2User.getName());
-        model.addAttribute("name", user.getName());
-        model.addAttribute("userPhoto", this.userService.getProfilePictureUrl(user.getProviderId()));
-
-        return "user/home";
+        return "redirect:/index";
     }
-
-
 }
+

@@ -1,87 +1,50 @@
 package andrei.chirila.prove_yourself.user;
 
+import andrei.chirila.prove_yourself.exception.EmailAlreadyExistsException;
+import andrei.chirila.prove_yourself.exception.UsernameAlreadyExistsException;
 import andrei.chirila.prove_yourself.utils.S3Utility;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final S3Utility s3Utility;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, S3Utility s3Utility) {
+    Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    public UserService(UserRepository userRepository, S3Utility s3Utility, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.s3Utility = s3Utility;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
-    public void saveUserPostOAuthLogin(String provider, String providerId, String email, String name, String profilePictureUrl) {
-        Optional<User> user = this.userRepository.findByProviderId(providerId);
-
-        user.ifPresentOrElse(u -> {
-            if (!Objects.equals(u.getEmail(), email)) u.setEmail(email);
-            if (!Objects.equals(u.getName(), name)) u.setName(name);
-        }, () -> this.userRepository.save(new User(provider, providerId, email, name, profilePictureUrl)));
-    }
-
-    public User retrieveCurrentUser(String providerId) {
-        Optional<User> user = this.userRepository.findByProviderId(providerId);
-
-        return user.orElse(null);
-    }
-
-    @Transactional
-    public void updateUser(String providerId, Map<String, String> data) {
-        Optional<User> user = this.userRepository.findByProviderId(providerId);
-
-        user.ifPresent(u-> {
-            if (data.containsKey("name") && !data.get("name").isEmpty()) u.setName(data.get("name"));
-            if (data.containsKey("email") && !data.get("email").isEmpty()) u.setEmail(data.get("email"));
-
-            this.userRepository.save(u);
-        });
-    }
-
-    @Transactional
-    public String uploadProfilePicture(String providerId, MultipartFile image) {
-        Optional<User> user = this.userRepository.findByProviderId(providerId);
-        String urlToUploadedPhoto = "";
-
-        if (user.isPresent()) {
-            String objectName = user.get().getUserId().toString();
-            String bucketName = "garage-bucket";
-
-            user.get().setProfilePictureUrl(this.s3Utility.uploadFile(bucketName, objectName, image));
-
-            urlToUploadedPhoto = this.s3Utility.createPresignedUrl(bucketName, objectName);
+    public void saveUser(UserRegistrationRequestDTO user) {
+        if (this.userRepository.existsByUsername(user.username())) {
+            logger.error("Username already exists", new UsernameAlreadyExistsException("Username already exists"));
         }
 
-        return urlToUploadedPhoto;
-    }
-
-    public String getProfilePictureUrl(String providerId) {
-        Optional<User> user = this.userRepository.findByProviderId(providerId);
-        String urlToUploadedPhoto = "";
-
-        if (user.isPresent()) {
-            if (user.get().getProfilePictureUrl().contains("http")) {
-                return user.get().getProfilePictureUrl();
-            }
-
-            urlToUploadedPhoto = this.s3Utility.createPresignedUrl("garage-bucket", user.get().getProfilePictureUrl());
+        if (this.userRepository.emailAlreadyExists(user.email())) {
+            logger.error("Email already exists", new EmailAlreadyExistsException("Email already exists"));
         }
 
-        return urlToUploadedPhoto;
+        User newUser = new User(
+                user.name(),
+                user.email()
+        );
+
+        newUser.setUsername(user.username());
+        newUser.setPassword(this.passwordEncoder.encode(user.password()));
+
+        this.userRepository.save(newUser);
     }
 
-    @Transactional
-    public void deleteUserProfile(String providerId) {
-        this.userRepository.deleteByProviderId(providerId);
+    public boolean checkIfUsernameExists(final String username) {
+        return this.userRepository.existsByUsername(username);
     }
 }
