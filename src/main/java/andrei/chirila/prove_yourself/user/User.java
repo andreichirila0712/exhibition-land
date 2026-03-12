@@ -17,49 +17,46 @@ import java.util.UUID;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
+    @Column(name = "user_id")
     private UUID userId;
-    @Column(name = "provider")
-    private String provider;
-    @Column(name = "provider_id", unique = true)
-    private String providerId;
-    @Column(name = "email", unique = true)
-    private String email;
     @Column(name = "name")
     private String name;
+    @Column(name = "username", unique = true)
+    private String username;
+    @Column(name = "email", unique = true)
+    private String email;
+    @Column(name = "password")
+    private String password;
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "user")
     private Set<Presentation> presentations;
 
     public User() {}
 
-    public User(String provider, String providerId, String email, String name, String profilePictureUrl) {
-        this.provider = provider;
-        this.providerId = providerId;
+    public User(String name, String email) {
         this.email = email;
         this.name = name;
-        this.profilePictureUrl = profilePictureUrl;
     }
 
     public UUID getUserId() {
         return userId;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getName() {
+        return name;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getProviderId() {
-        return providerId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -70,12 +67,12 @@ public class User {
         this.email = email;
     }
 
-    public String getName() {
-        return name;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getPassword() {
+        return password;
     }
 
     public String getProfilePictureUrl() {
