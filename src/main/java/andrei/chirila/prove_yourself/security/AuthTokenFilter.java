@@ -2,6 +2,7 @@ package andrei.chirila.prove_yourself.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
@@ -28,11 +30,18 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String jwt = parseJwt(request);
+        String token = null;
 
-            if (jwt != null && jwtUtil.validateJwtToken(jwt)) {
-                String username = jwtUtil.getUsernameFromToken(jwt);
+        if (request.getCookies() != null) {
+            token = Arrays.stream(request.getCookies())
+                    .filter(c -> "jwt_token".equals(c.getName()))
+                    .map(Cookie::getValue)
+                    .findFirst().orElse(null);
+        }
+
+        try {
+            if (token != null && jwtUtil.validateJwtToken(token)) {
+                String username = jwtUtil.getUsernameFromToken(token);
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

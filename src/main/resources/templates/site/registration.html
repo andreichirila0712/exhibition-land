@@ -1,0 +1,35 @@
+<div th:fragment="registration-modal" id="registration-modal" hx-swap-oob="true" th:_="'on load add .active to #reg-modal'">
+    <div class="modal" id="reg-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title h5 text-center">New account</div>
+            </div>
+            <div class="modal-body">
+                <div class="content">
+                    <form id="registration-form" hx-post="/auth/register">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Name</label>
+                            <input class="form-input" type="text" id="name" name="name" required>
+                            <label class="form-label" for="email">Email</label>
+                            <input class="form-input" type="email" id="email" name="email" required>
+                            <label class="form-label" for="username">Username</label>
+                            <input class="form-input" type="text" id="username" name="username" required>
+                            <label class="form-label" for="password">Password</label>
+                            <input class="form-input" type="password" id="password" name="password" required>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-left" th:_="'on click remove .active from #reg-modal'">Close</button>
+                <button type="submit" class="btn float-right" th:_="'on click call #registration-form.requestSubmit()'">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:fragment="registration-successful" id="registration-success" hx-swap-oob="true" th:_="'on load remove .active from #reg-modal'">
+    <div class="toast toast-success bottom-right toast-sm" id="success-popup">
+        <button class="btn btn-clear float-right" aria-label="Close" _="on click add .toast-btn-closing then wait 300ms then remove #success-popup"></button>
+        Account created!
+    </div>
+</div>
