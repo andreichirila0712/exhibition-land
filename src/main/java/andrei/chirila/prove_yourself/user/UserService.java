@@ -30,7 +30,7 @@ public class UserService {
         }
 
         if (this.userRepository.existsByEmail(user.email())) {
-            logger.error("Email already exists", new EmailAlreadyExistsException("Email already exists"));
+            logger.error("EmailConfig already exists", new EmailAlreadyExistsException("EmailConfig already exists"));
         }
 
         User newUser = new User(
@@ -40,11 +40,23 @@ public class UserService {
         IO.println(user);
         newUser.setUsername(user.username());
         newUser.setPassword(this.passwordEncoder.encode(user.password()));
+        newUser.setEmailVerified(false);
 
         this.userRepository.save(newUser);
     }
 
     public boolean checkIfUsernameExists(final String username) {
         return this.userRepository.existsByUsername(username);
+    }
+
+    public boolean getUserActiveStatus(final String email) {
+        return this.userRepository.checkActiveStatusByEmail(email);
+    }
+
+    @Transactional
+    public void verifyEmail(final String email) {
+        User user = this.userRepository.findByEmail(email);
+
+        user.setEmailVerified(true);
     }
 }
