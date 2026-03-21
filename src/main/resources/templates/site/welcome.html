@@ -16,8 +16,8 @@
             </div>
 
             <div class="card-body">
-                <form id="login-form" hx-encoding="multipart/form-data" hx-post="/auth/login">
-                    <div class="form-group" hx-post="/auth/login">
+                <form id="login-form" hx-post="/auth/login">
+                    <div class="form-group">
                         <label class="form-label" for="username">Username</label>
                         <input class="form-input" type="text" id="username" name="username" required>
                         <label class="form-label" for="password">Password</label>
@@ -32,6 +32,7 @@
         </div>
     </div>
     <div id="registration-modal"></div>
+    <div class="overlay" id="overlay-content"></div>
     <div id="registration-success"></div>
     <div id="account-is-active"></div>
 </body>

@@ -37,7 +37,7 @@ public class UserService {
                 user.name(),
                 user.email()
         );
-        IO.println(user);
+
         newUser.setUsername(user.username());
         newUser.setPassword(this.passwordEncoder.encode(user.password()));
         newUser.setEmailVerified(false);

@@ -21,22 +21,15 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary float-left" th:_="'on click remove .active from #reg-modal'">Close</button>
-                <button type="submit" class="btn float-right" th:_="'on click call #registration-form.requestSubmit()'">Submit</button>
+                <button type="button" class="btn btn-secondary float-left" _="on click remove .active from #reg-modal">Close</button>
+                <button type="submit" class="btn float-right" _="on click call #registration-form.requestSubmit()">Submit</button>
             </div>
         </div>
     </div>
 </div>
-<div th:fragment="registration-successful" id="registration-success" hx-swap-oob="true" th:_="'on load remove .active from #reg-modal'">
-    <div class="toast toast-success bottom-right toast-sm" id="success-popup">
-        <button class="btn btn-clear float-right" aria-label="Close" th:_="'on click add .toast-btn-closing then wait 300ms then remove #success-popup'"></button>
-        Account created!
-    </div>
-</div>
-<div th:fragment="account-activated" id="account-is-active" hx-swap-oob="true">
-    <div class="toast toast-success toast-sm" id="success-activation-popup">
-        <button class="btn btn-clear float-right" aria-label="Close" th:_="'on click add .toast-btn-closing then remove #success-activation-popup'">
-            Account activated!
-        </button>
+<div th:fragment="registration-successful" class="overlay-item" id="registration-success" hx-swap-oob="true" _="on load remove .active from #reg-modal then set #overlay-content.style.display to 'block'">
+    <div class="toast" id="success-popup">
+        <button class="btn btn-clear float-right" aria-label="Close" _="on click remove #success-popup then set #overlay-content.style.display to 'none'"></button>
+        The account has been successfully created. A verification link has been sent to the associated email to activate it.
     </div>
 </div>

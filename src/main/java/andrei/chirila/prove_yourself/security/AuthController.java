@@ -45,10 +45,10 @@ public class AuthController {
     }
 
     @GetMapping("/activate")
-    public FragmentsRendering activated(@RequestParam("token") UUID token) {
+    public String activated(@RequestParam("token") UUID token) {
         this.authService.activateAccount(token);
 
-        return FragmentsRendering.fragment("site/registration :: account-activated").build();
+        return "site/verification";
     }
 }
 
