@@ -16,16 +16,24 @@
             </div>
 
             <div class="card-body">
-                <div class="form-group" hx-post="/auth/login">
-                    <label class="form-label" for="username">Username</label>
-                    <input class="form-input" type="text" id="username" name="username" required>
-                    <label class="form-label" for="password">Password</label>
-                    <input class="form-input" type="password" id="password" name="password" required>
-                    <button class="btn btn-primary float-right" type="submit">Login</button>
-                    <button class="btn btn-secondary float-left" hx-get="/auth/register">Register</button>
-                </div>
+                <form id="login-form" hx-post="/auth/login">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input class="form-input" type="text" id="username" name="username" required>
+                        <label class="form-label" for="password">Password</label>
+                        <input class="form-input" type="password" id="password" name="password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary float-right" type="submit" th:_="'on click call #login-form.requestSubmit()'">Login</button>
+                <button class="btn btn-secondary float-left" type="button" hx-get="/auth/registration-form" hx-target="#registration-modal">Register</button>
             </div>
         </div>
     </div>
+    <div id="registration-modal"></div>
+    <div class="overlay" id="overlay-content"></div>
+    <div id="registration-success"></div>
+    <div id="account-is-active"></div>
 </body>
 </html>

@@ -29,6 +29,8 @@ public class User {
     private String password;
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
+    @Column(name= "email_verified")
+    private boolean emailVerified;
     @OneToMany(mappedBy = "user")
     private Set<Presentation> presentations;
 
@@ -81,6 +83,14 @@ public class User {
 
     public void setProfilePictureUrl(String profilePictureUrl) {
         this.profilePictureUrl = profilePictureUrl;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
     public Set<Presentation> getPresentations() {
