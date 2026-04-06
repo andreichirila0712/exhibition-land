@@ -6,7 +6,7 @@
             </div>
             <div class="modal-body">
                 <div class="content">
-                    <form id="registration-form" hx-post="/auth/register">
+                    <form id="registration-form" th:hx-post="${createUserPath}">
                         <div class="form-group">
                             <label class="form-label" for="name">Name</label>
                             <input class="form-input" type="text" id="name" name="name" required>
@@ -30,6 +30,6 @@
 <div th:fragment="registration-successful" class="overlay-item" id="registration-success" hx-swap-oob="true" _="on load remove .active from #reg-modal then set #overlay-content.style.display to 'block'">
     <div class="toast" id="success-popup">
         <button class="btn btn-clear float-right" aria-label="Close" _="on click remove #success-popup then set #overlay-content.style.display to 'none'"></button>
-        The account has been successfully created. A verification link has been sent to the associated email to activate it.
+        The account has been successfully created. A verification link will be sent shortly to the associated email to activate it.
     </div>
 </div>
