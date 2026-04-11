@@ -1,35 +1,74 @@
-<div th:fragment="registration-modal" id="registration-modal" hx-swap-oob="true" th:_="'on load add .active to #reg-modal'">
-    <div class="modal" id="reg-modal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <div class="modal-title h5 text-center">New account</div>
-            </div>
-            <div class="modal-body">
-                <div class="content">
-                    <form id="registration-form" th:hx-post="${createUserPath}">
-                        <div class="form-group">
-                            <label class="form-label" for="name">Name</label>
-                            <input class="form-input" type="text" id="name" name="name" required>
-                            <label class="form-label" for="email">Email</label>
-                            <input class="form-input" type="email" id="email" name="email" required>
-                            <label class="form-label" for="username">Username</label>
-                            <input class="form-input" type="text" id="username" name="username" required>
-                            <label class="form-label" for="password">Password</label>
-                            <input class="form-input" type="password" id="password" name="password" required>
-                        </div>
-                    </form>
+<div th:fragment="registration-modal" id="registration-modal" hx-swap-oob="true">
+    <dialog open id="reg-modal">
+        <article>
+            <header style="text-align: center">
+                <h2>Create your account</h2>
+            </header>
+            <form id="registration-form" th:hx-post="${createUserPath}">
+                <fieldset>
+                    <label>
+                        Name
+                        <input
+                            name="name"
+                            id="name"
+                            type="text"
+                            placeholder="Name"
+                            required
+                            />
+                    </label>
+                    <label>
+                        Username
+                        <input
+                            name="username"
+                            id="username"
+                            type="text"
+                            placeholder="Username"
+                            required
+                        />
+                    </label>
+                    <label>
+                        Email
+                        <input
+                            name="email"
+                            id="email"
+                            type="email"
+                            placeholder="Email"
+                            required
+                        />
+                    </label>
+                    <label>
+                        Password
+                        <input
+                            name="password"
+                            id="password"
+                            type="password"
+                            minlength="8"
+                            required
+                        />
+                    </label>
+                </fieldset>
+            </form>
+            <footer>
+                <div style="display: flex; justify-content: space-between; width: 100%;">
+                    <button class="contrast" _="on click call #reg-modal.close()" aria-label="Close">Close</button>
+                    <button _="on click call #registration-form.requestSubmit()">Submit</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary float-left" _="on click remove .active from #reg-modal">Close</button>
-                <button type="submit" class="btn float-right" _="on click call #registration-form.requestSubmit()">Submit</button>
-            </div>
-        </div>
-    </div>
+            </footer>
+        </article>
+    </dialog>
 </div>
-<div th:fragment="registration-successful" class="overlay-item" id="registration-success" hx-swap-oob="true" _="on load remove .active from #reg-modal then set #overlay-content.style.display to 'block'">
-    <div class="toast" id="success-popup">
-        <button class="btn btn-clear float-right" aria-label="Close" _="on click remove #success-popup then set #overlay-content.style.display to 'none'"></button>
-        The account has been successfully created. A verification link will be sent shortly to the associated email to activate it.
-    </div>
+<div th:fragment="registration-successful" id="registration-success" hx-swap-oob="true" _="on load call #reg-modal.close() then set #overlay-content.style.display to 'block'">
+    <dialog open id="success-reg-modal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" _="on click call #success-reg-modal.close() then set #overlay-content.style.display to 'none'"></button>
+                <p style="display: flex; justify-content: center;">
+                    <b>Thank you for registering!</b>
+                </p>
+            </header>
+            <p>
+                The account has been successfully created. A verification link will be sent shortly to the associated email to activate it.
+            </p>
+        </article>
+    </dialog>
 </div>

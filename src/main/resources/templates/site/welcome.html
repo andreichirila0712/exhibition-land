@@ -5,35 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=1.0">
     <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
-    <link rel="stylesheet" href="/css/prove.css" type="text/css" th:href="@{/css/prove.css}">
+    <link rel="stylesheet" href="/css/prove.css" th:href="@{/css/prove.css}">
     <title>Welcome</title>
 </head>
 <body>
-    <div class="middle-center">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title h5 flex-centered">Login</div>
-            </div>
+<div style="display: flex; min-height: 100vh; width: 100%; align-items: center; justify-content: center;">
+    <article>
+        <header style="text-align: center">
+            Login
+        </header>
+        <form id="login-form" th:hx-post="${loginPath}">
+            <fieldset>
+                <label>
+                    Email
+                    <input
+                            name="email"
+                            type="email"
+                            placeholder="Email"
+                            autocomplete="email"
+                    />
+                </label>
+                <label>
+                    Password
+                    <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            minlength="8"
+                    />
+                </label>
+            </fieldset>
+        </form>
+        <footer>
+            <button type="submit" th:_="'on click call #login-form.requestSubmit()'">Login</button>
+            <a class="contrast" th:hx-get="${registerPath}" hx-target="#registration-modal">Sign Up</a>
+        </footer>
+    </article>
 
-            <div class="card-body">
-                <form id="login-form" th:hx-post="${loginPath}">
-                    <div class="form-group">
-                        <label class="form-label" for="email">Email</label>
-                        <input class="form-input" type="email" id="email" name="email" required>
-                        <label class="form-label" for="password">Password</label>
-                        <input class="form-input" type="password" id="password" name="password" required>
-                    </div>
-                </form>
-            </div>
-            <div class="card-footer">
-                <button class="btn btn-primary float-right" type="submit" th:_="'on click call #login-form.requestSubmit()'">Login</button>
-                <button class="btn btn-secondary float-left" type="button" th:hx-get="${registerPath}" hx-target="#registration-modal">Register</button>
-            </div>
-        </div>
-    </div>
-    <div id="registration-modal"></div>
-    <div class="overlay" id="overlay-content"></div>
-    <div id="registration-success"></div>
-    <div id="account-is-active"></div>
+
+</div>
+<div id="registration-modal"></div>
+<div class="overlay" id="overlay-content"></div>
+<div id="registration-success"></div>
+<div id="account-is-active"></div>
 </body>
 </html>
