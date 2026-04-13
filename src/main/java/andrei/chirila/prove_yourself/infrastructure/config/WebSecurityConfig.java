@@ -90,7 +90,7 @@ public class WebSecurityConfig {
                                         .build();
 
                                 response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
-                                response.setStatus(HttpStatus.OK.value());
+                                response.sendRedirect(WebSecurityConfig.WELCOME_URL_MATCHER);
                             });
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
