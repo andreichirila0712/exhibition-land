@@ -14,7 +14,7 @@
         <header style="text-align: center">
             Login
         </header>
-        <form id="login-form" th:hx-post="${loginPath}">
+        <form id="login-form" method="post" th:action="${loginPath}">
             <fieldset>
                 <label>
                     Email
