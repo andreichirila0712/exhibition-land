@@ -5,16 +5,15 @@ import andrei.chirila.prove_yourself.infrastructure.config.ApiConfig;
 import andrei.chirila.prove_yourself.infrastructure.config.WebSecurityConfig;
 import andrei.chirila.prove_yourself.infrastructure.dtos.CreateUserDto;
 import andrei.chirila.prove_yourself.infrastructure.dtos.LoginRequestDto;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.FragmentsRendering;
@@ -35,6 +34,8 @@ public class AuthController {
     private int cookieMaxAge;
     @Value("${cookie.same-site}")
     private String cookieSameSite;
+    @Value("${cookie.path}")
+    private String cookiePath;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -44,16 +45,10 @@ public class AuthController {
     @ResponseBody
     public void login(@Valid LoginRequestDto loginRequestDto, HttpServletResponse response) {
         final String token = authService.login(loginRequestDto);
-        final Cookie cookie = createAuthCookie(token);
-        response.addCookie(cookie);
-        response.addHeader("HX-Redirect", WebSecurityConfig.HOME_URL_MATCHER);
-    }
-
-    @PostMapping("/logout")
-    @ResponseBody
-    public void logout(HttpServletResponse response) {
-        final Cookie cookie = new Cookie(cookieName, StringUtils.EMPTY);
-        cookie.setMaxAge(0);
+        final ResponseCookie cookie = createAuthCookie(token);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", WebSecurityConfig.HOME_URL_MATCHER);
     }
 
     @GetMapping("/register")
@@ -77,14 +72,13 @@ public class AuthController {
         return "site/verification";
     }
 
-    private Cookie createAuthCookie(String token) {
-        final String SAME_SITE_KEY = "SameSite";
-        final Cookie cookie = new Cookie(cookieName, token);
-        cookie.setHttpOnly(cookieHttpOnly);
-        cookie.setSecure(cookieSecure);
-        cookie.setMaxAge(cookieMaxAge);
-        cookie.setAttribute(SAME_SITE_KEY, cookieSameSite);
-
-        return cookie;
+    private ResponseCookie createAuthCookie(String token) {
+        return ResponseCookie.from(cookieName, token)
+                .httpOnly(cookieHttpOnly)
+                .secure(cookieSecure)
+                .maxAge(cookieMaxAge)
+                .sameSite(cookieSameSite)
+                .path(cookiePath)
+                .build();
     }
 }

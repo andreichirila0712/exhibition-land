@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=1.0">
+    <link rel="stylesheet" href="/css/prove.css" th:href="@{/css/prove.css}">
     <title>Home</title>
 </head>
 <body>
+<nav>
+    <ul>
+        <li><b>Exhibition Land</b></li>
+    </ul>
+    <ul>
+        <li><a th:href="${projectsPath}" class="secondary">Projects</a></li>
+        <li>
+            <details class="dropdown">
+                <summary>
+                    Account
+                </summary>
+                <ul dir="rtl">
+                    <li><a th:href="${profilePath}">Profile</a></li>
+                    <li><a th:href="${settingsPath}">Settings</a></li>
+                    <li><button type=submit form="logout-form">Logout</button></li>
+                </ul>
+            </details>
+        </li>
+    </ul>
+</nav>
+<form id="logout-form" method="post" th:action="${logoutPath}" style="display: none;"></form>
 </body>
 </html>
