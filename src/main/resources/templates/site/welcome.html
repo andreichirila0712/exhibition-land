@@ -8,42 +8,50 @@
     <link rel="stylesheet" href="/css/prove.css" th:href="@{/css/prove.css}">
     <title>Welcome</title>
 </head>
-<body>
-<div style="display: flex; min-height: 100vh; width: 100%; align-items: center; justify-content: center;">
-    <article>
-        <header style="text-align: center">
-            Login
-        </header>
-        <form id="login-form" method="post" th:action="${loginPath}">
-            <fieldset>
-                <label>
-                    Email
-                    <input
-                            name="email"
-                            type="email"
-                            placeholder="Email"
-                            autocomplete="email"
-                    />
-                </label>
-                <label>
-                    Password
-                    <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            minlength="8"
-                    />
-                </label>
-            </fieldset>
-        </form>
-        <footer>
-            <button type="submit" th:_="'on click call #login-form.requestSubmit()'">Login</button>
-            <a class="contrast" th:hx-get="${registerPath}" hx-target="#registration-modal">Sign Up</a>
-        </footer>
-    </article>
+<body class="body-full-view">
+<header class="container">
+    <nav>
+        <ul>
+            <li>
+                <ins><b>Exhibition Land</b></ins>
+            </li>
+        </ul>
+        <ul>
+            <li><a th:hx-get="${loginForm}" hx-target="#login-frag" class="outline secondary" role="button">Login</a>
+            </li>
+            <li><a th:hx-get="${signUp}" hx-target="#registration-modal" class="pico-background-zinc-100" role="button">Sign
+                Up</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="container main-style">
+    <section>
+        <hgroup>
+            <h1>If it
+                <mark><u>works</u></mark>
+                , it means it must have been done <kbd>right</kbd><sub>.</sub></h1>
+            <p>Why not just show what you've done?</p>
+        </hgroup>
+    </section>
 
-
-</div>
+    <section>
+        <h2>But if it <s class="pico-color-pumpkin-300"><b class="pico-color-pumpkin-300">doesn't</b></s>, then it is a
+            <b class="pico-color-jade-500">feature</b>, never a <b class="pico-color-red-500">bu<sup>g</sup></b></h2>
+    </section>
+</main>
+<footer class="container">
+    <nav style="justify-content: center;">
+        <ul>
+            <li>©</li>
+            <li>Exhibition Land</li>
+            <li>·</li>
+            <li><a th:href="${privacyPolicy}">Privacy Policy</a></li>
+            <li>·</li>
+            <li><a th:href="${termsOfService}">Terms of Service</a></li>
+        </ul>
+    </nav>
+</footer>
+<div id="login-frag"></div>
 <div id="registration-modal"></div>
 <div class="overlay" id="overlay-content"></div>
 <div id="registration-success"></div>
