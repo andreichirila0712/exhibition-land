@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -54,7 +53,7 @@ public class WebSecurityConfig {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public static final String LOGIN_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/login";
+    public static final String LOGIN_AUTH_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/login";
     public static final String LOGIN_FAILURE_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/login?failure";
     public static final String REGISTRATION_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/register";
     public static final String CREATE_USER_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/create-user";
@@ -62,6 +61,9 @@ public class WebSecurityConfig {
     public static final String LOGOUT_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/logout";
     public static final String HOME_URL_MATCHER = ApiConfig.API_BASE_PATH + "/home";
     public static final String WELCOME_URL_MATCHER = ApiConfig.API_BASE_PATH + "/welcome";
+    public static final String LOGIN_URL_MATCHER = ApiConfig.API_BASE_PATH  + "/login";
+    public static final String PRIVACY_POLICY_URL_MATCHER = ApiConfig.API_BASE_PATH + "/privacy-policy";
+    public static final String TERMS_OF_SERVICE_URL_MATCHER = ApiConfig.API_BASE_PATH + "/tos";
     final String BASE_URL_MATCHER = ApiConfig.API_BASE_PATH + "/**";
 
     @Bean
@@ -70,10 +72,13 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/css/**").permitAll()
                         .requestMatchers(HttpMethod.GET, WELCOME_URL_MATCHER).permitAll()
-                        .requestMatchers(HttpMethod.POST, LOGIN_URL_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.POST, LOGIN_AUTH_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.GET, REGISTRATION_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.POST, CREATE_USER_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.GET, ACCOUNT_VERIFICATION_URL_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.GET, LOGIN_URL_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.GET, PRIVACY_POLICY_URL_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.GET, TERMS_OF_SERVICE_URL_MATCHER).permitAll()
                         .requestMatchers(BASE_URL_MATCHER).authenticated()
                         .anyRequest().denyAll()
                 )

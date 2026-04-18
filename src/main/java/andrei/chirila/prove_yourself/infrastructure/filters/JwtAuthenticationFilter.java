@@ -27,7 +27,7 @@ import java.util.Optional;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    private static final List<String> URL_MATCHERS = List.of(WebSecurityConfig.WELCOME_URL_MATCHER, WebSecurityConfig.LOGIN_URL_MATCHER, WebSecurityConfig.REGISTRATION_URL_MATCHER, WebSecurityConfig.CREATE_USER_URL_MATCHER, WebSecurityConfig.ACCOUNT_VERIFICATION_URL_MATCHER, WebSecurityConfig.LOGOUT_URL_MATCHER, "/css/prove.css");
+    private static final List<String> URL_MATCHERS = List.of(WebSecurityConfig.WELCOME_URL_MATCHER, WebSecurityConfig.LOGIN_AUTH_URL_MATCHER, WebSecurityConfig.REGISTRATION_URL_MATCHER, WebSecurityConfig.CREATE_USER_URL_MATCHER, WebSecurityConfig.ACCOUNT_VERIFICATION_URL_MATCHER, WebSecurityConfig.LOGOUT_URL_MATCHER, WebSecurityConfig.LOGIN_URL_MATCHER, WebSecurityConfig.PRIVACY_POLICY_URL_MATCHER, WebSecurityConfig.TERMS_OF_SERVICE_URL_MATCHER,"/css/prove.css");
     private final AuthService authService;
     private final UserDetailsService userDetailsService;
     @Value("${cookie.name}")
