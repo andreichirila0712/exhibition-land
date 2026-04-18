@@ -1,23 +1,25 @@
 @use "vendor/pico/pico";
+@use "vendor/pico/colors";
+@use "vendor/pico/colors/utilities";
 
-.btn-gh {
+.btn-login {
   background-color: #303742;
   color: #ffffff !important;
   border-color: #303742;
 }
 
-.btn-gh:hover {
+.btn-login:hover {
   background-color: #303742;
   color: #ffffff !important;
 }
 
-.btn-go {
+.btn-register {
   background-color: #f7f8f9;
   color: #303742 !important;
   border-color: #e5e5e5;
 }
 
-.btn-go:hover {
+.btn-register:hover {
   background-color: #f7f8f9;
   color: #303742 !important;
   border-color: #e5e5e5;
@@ -35,65 +37,6 @@
   background-color: #ff6b81;
   color: #ffffff !important;
   border-color: #ff6b81;
-}
-
-.bottom-right {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-.toast-sm {
-  width: 200px;
-  height: 40px;
-}
-
-.toast-btn-closing {
-  background-color: #3b4351;
-  color: #ffffff !important;
-  border-color: #3b4351;
-  animation: closing 0.3s ease-out forwards;
-  pointer-events: none;
-}
-
-.navbar-bg {
-  background-color: #3b4351;
-}
-
-.btn-home {
-  background-color: #3b4351;
-  color: #ffffff !important;
-  border-color: #3b4351;
-}
-
-.btn-home:hover {
-  background-color: #3b4351;
-  color: #ffffff !important;
-  border-color: #3b4351;
-}
-
-.btn-add {
-  background-color: black;
-  color: #ffffff;
-  border-color: black;
-}
-
-.btn-add:hover {
-  background-color: black;
-  color: #ffffff;
-  border-color: black;
-}
-
-.btn-patch {
-  background-color: #bcc3ce;
-  color: #455060;
-  border-color: #bcc3ce;
-}
-
-.btn-patch:hover {
-  background-color: #bcc3ce;
-  color: #455060;
-  border-color: #bcc3ce;
 }
 
 .overlay {
@@ -115,24 +58,14 @@
   z-index: 11;
 }
 
-.toast-center {
-  align-items: center;
+.body-full-view {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   min-height: 100vh;
 }
 
-.toast-custom-width {
-  max-width: 400px !important;
-}
+.main-style {
+  flex: 1 !important;
 
-@keyframes closing {
-  from {
-    opacity: 1; transform: scale(1);
-  }
-  to {
-    opacity: 0; transform: scale(0.9);
-  }
 }
-
 
