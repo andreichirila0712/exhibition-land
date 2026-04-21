@@ -26,7 +26,7 @@ public class SiteController {
     public String home(Model model) {
         model.addAttribute("projectsPath", ApiConfig.API_BASE_PATH + "/projects");
         model.addAttribute("profilePath", ApiConfig.API_BASE_PATH + "/profile");
-        model.addAttribute("settingsPath", ApiConfig.API_BASE_PATH + "/account-settings");
+        model.addAttribute("settingsPath", ApiConfig.API_BASE_PATH + "/settings");
         model.addAttribute("logoutPath", WebSecurityConfig.LOGOUT_URL_MATCHER);
 
         return "site/home";
@@ -47,5 +47,10 @@ public class SiteController {
     @GetMapping("/tos")
     public String tos() {
         return "site/tos";
+    }
+
+    @GetMapping("/settings")
+    public String settings() {
+        return "site/settings";
     }
 }
