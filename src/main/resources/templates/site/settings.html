@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=1.0">
+    <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+    <link rel="stylesheet" href="/css/prove.css" th:href="@{/css/prove.css}">
+    <title>Settings</title>
+</head>
+<body class="body-full-view">
+<header class="container">
+    <nav>
+        <ul>
+            <li><a th:hx-get="${homePath}" role="button">Home</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="container main-style">
+    <article>
+        <header>Settings</header>
+
+        <details>
+            <summary>
+                General
+            </summary>
+            <article>
+                <form>
+                    <fieldset>
+                        <legend>Language preference:</legend>
+                        <label>
+                            <input type="radio"
+                                   value="english"
+                                   name="language"
+                                   th:checked="${languagePreference == 'english'}"
+                                   th:hx-patch="${updateLanguagePath}"
+                                   hx-trigger="change"
+                            />
+                            English
+                        </label>
+                        <label>
+                            <input type="radio"
+                                   value="romanian"
+                                   name="language"
+                                   th:checked="${languagePreference == 'romanian'}"
+                                   th:hx-patch="${updateLanguagePath}"
+                                   hx-trigger="change"
+                            />
+                            Romanian
+                        </label>
+
+                        <legend>Theme toggle:</legend>
+                        <label>
+                            <input type="radio"
+                                   value="light"
+                                   name="theme"
+                                   th:checked="${themePreference == 'light'}"
+                                   th:hx-patch="${themeUpdatePath}"
+                                   hx-trigger="change"
+                            />
+                            Light
+                        </label>
+                        <label>
+                            <input type="radio"
+                                   value="dark"
+                                   name="theme"
+                                   th:checked="${themePreference == 'dark'}"
+                                   th:hx-patch="${themeUpdatePath}"
+                                   hx-trigger="change"
+                            />
+                            Dark
+                        </label>
+                        <legend>Date format preference:</legend>
+                        <label>
+                            <input type="radio"
+                                   value="MM/DD/YYYY"
+                                   name="date-format"
+                                   th:checked="${dateFormatPreference == 'MM/DD/YYYY'}"
+                                   th:hx-patch="${dateFormatUpdatePath}"
+                                   hx-trigger="change"
+                            />
+                            MM/DD/YYYY
+                        </label>
+                        <label>
+                            <input type="radio"
+                                   value="DD/MM/YYYY"
+                                   name="date-format"
+                                   th:checked="${dateFormatPreference == 'DD/MM/YYYY'}"
+                                   th:hx-patch="${dateFormatUpdatePath}"
+                                   hx-trigger="change"
+                            />
+                            DD/MM/YYYY
+                        </label>
+                    </fieldset>
+                </form>
+            </article>
+        </details>
+
+        <details>
+            <summary>
+                Privacy
+            </summary>
+            <article>
+                <form>
+                    <fieldset>
+                        <legend>Profile visibility:</legend>
+                        <label>
+                            <input type="radio"
+                                   value="private"
+                                   name="visibility"
+                                   th:checked="${profileVisibilityPreference} == 'private'"
+                                   th:hx-patch="${visibilityUpdatePath}"
+                                   hx-trigger="change"
+                            />
+                            Private
+                        </label>
+                        <label>
+                            <input type="radio"
+                                   value="public"
+                                   name="visibility"
+                                   th:checked="${profileVisibilityPreference} == 'public'"
+                                   th:hx-patch="${visibilityUpdatePath}"
+                                   hx-trigger="change"
+                            />
+                            Public
+                        </label>
+                        <legend>Discoverable</legend>
+                        <label>
+                            <input type="radio"
+                                   value="yes"
+                                   name="discoverable"
+                                   th:checked="${profileDiscoverable} == 'yes'"
+                                   th:hx-patch="${discoverabilityUpdatePath}"
+                                   hx-trigger="change"
+                                   disabled
+                            />
+                            Yes
+                        </label>
+                        <label>
+                            <input type="radio"
+                                   value="no"
+                                   name="discoverable"
+                                   th:checked="${profileDiscoverable} == 'no'"
+                                   th:hx-patch="${discoverabilityUpdatePath}"
+                                   hx-trigger="change"
+                                   disabled
+                            />
+                            No
+                        </label>
+                    </fieldset>
+                </form>
+                <button class="pico-background-red-500"
+                        _="on click add .open to #account-deletion-modal then set #account-deletion-modal.style.display to 'flex'">
+                    Delete account
+                </button>
+            </article>
+        </details>
+
+        <details>
+            <summary>
+                Account & Security
+            </summary>
+            <article>
+                <button class="pico-background-grey-500"
+                        _="on click add .open to #password-change-modal then set #password-change-modal.style.display to 'flex'">
+                    Change password
+                </button>
+                <form>
+                    <fieldset>
+                        <label>
+                            Change email
+                            <input type="email"
+                                   placeholder="test@gmail.com"
+                                   name="newEmail"
+                                   id="newEmail"
+                            />
+                            <button type="button" class="pico-background-azure-500"
+                                    th:hx-patch="${emailChangePath}"
+                                    hx-include="#newEmail"
+                                    hx-target="#email-change-response"
+                            >
+                                Apply change
+                            </button>
+                        </label>
+                    </fieldset>
+                </form>
+            </article>
+        </details>
+    </article>
+</main>
+<div th:replace="~{layout/footer :: footer}"></div>
+<dialog style="display: none; justify-content: center;" id="account-deletion-modal">
+    <article>
+        <header>
+            <p style="display: flex; justify-content: center;">
+                Are you sure?
+            </p>
+        </header>
+        <p>This action will permanently delete your account and all data associated with it. The account cannot be
+            restored after its deletion.</p>
+        <footer>
+            <div class="form-buttons-positioning">
+                <button aria-label="Close"
+                        _="on click call #account-deletion-modal.close() then set #account-deletion-modal.style.display to 'none'">
+                    Close
+                </button>
+                <button class="pico-background-red-500" th:hx-post="${accountDeletionPath}"
+                        _="on click set #account-deletion-modal.style.display to 'none'">Yes, I'm sure
+                </button>
+            </div>
+        </footer>
+    </article>
+</dialog>
+<dialog style="display: none; justify-content: center;" id="password-change-modal">
+    <article>
+        <header>
+            <p style="display: flex; justify-content: center;">
+                Change password
+            </p>
+        </header>
+        <form>
+            <fieldset>
+                <label>
+                    Current password
+                    <input type="password"
+                           minlength="8"
+                           name="currentPassword"
+                           th:aria-invalid="${passwordValid}"
+                           th:hx-get="${checkCurrentPasswordPath}"
+                           hx-trigger="keyup changed delay:500ms"
+                           aria-describedby="password-valid-helper"
+                    />
+                    <small id="password-valid-helper" th:if="${passwordValid} != null"
+                           th:text="${passwordValid ? 'Invalid' : 'Valid'}">
+                    </small>
+                </label>
+
+            </fieldset>
+            <fieldset>
+                <label>
+                    New password
+                    <input type="password"
+                           minlength="8"
+                           name="newPassword"
+                           id="newPassword"
+                    />
+                </label>
+            </fieldset>
+        </form>
+        <footer>
+            <div class="form-buttons-positioning">
+                <button aria-label="Close" type="button"
+                        _="on click call #password-change-modal.close() then set #password-change-modal.style.display to 'none'">
+                    Close
+                </button>
+                <button class="pico-background-amber-500" type="button"
+                        th:hx-patch="${passwordChangePath}"
+                        hx-include="#newPassword"
+                        hx-target="#password-change-response"
+                        _="on click set #password-change-modal.style.display to 'none'">
+                    Apply
+                </button>
+            </div>
+        </footer>
+    </article>
+</dialog>
+<div id="password-change-response"></div>
+<div id="email-change-response"></div>
+</body>
+</html>

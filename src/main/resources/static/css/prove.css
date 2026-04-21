@@ -6878,4 +6878,16 @@ textarea,
   flex: 1 !important;
 }
 
+.settings-navbar {
+  display: flex;
+  width: 85px;
+  height: 510px;
+}
+
+.form-buttons-positioning {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
 /*# sourceMappingURL=prove.css.map */
