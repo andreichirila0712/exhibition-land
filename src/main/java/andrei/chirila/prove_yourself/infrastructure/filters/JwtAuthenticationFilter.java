@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +28,20 @@ import java.util.Optional;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    private static final List<String> URL_MATCHERS = List.of(WebSecurityConfig.WELCOME_URL_MATCHER, WebSecurityConfig.LOGIN_AUTH_URL_MATCHER, WebSecurityConfig.REGISTRATION_URL_MATCHER, WebSecurityConfig.CREATE_USER_URL_MATCHER, WebSecurityConfig.ACCOUNT_VERIFICATION_URL_MATCHER, WebSecurityConfig.LOGOUT_URL_MATCHER, WebSecurityConfig.LOGIN_URL_MATCHER, WebSecurityConfig.PRIVACY_POLICY_URL_MATCHER, WebSecurityConfig.TERMS_OF_SERVICE_URL_MATCHER,"/css/prove.css");
+    private static final List<String> URL_MATCHERS = List.of(
+            WebSecurityConfig.WELCOME_URL_MATCHER,
+            WebSecurityConfig.LOGIN_AUTH_URL_MATCHER,
+            WebSecurityConfig.REGISTRATION_URL_MATCHER,
+            WebSecurityConfig.CREATE_USER_URL_MATCHER,
+            WebSecurityConfig.ACCOUNT_VERIFICATION_URL_MATCHER,
+            WebSecurityConfig.LOGOUT_URL_MATCHER,
+            WebSecurityConfig.LOGIN_URL_MATCHER,
+            WebSecurityConfig.PRIVACY_POLICY_URL_MATCHER,
+            WebSecurityConfig.TERMS_OF_SERVICE_URL_MATCHER,
+            WebSecurityConfig.EMAIL_CHANGE_CONFIRMATION_URL_MATCHER,
+            WebSecurityConfig.PASSWORD_CHANGE_CONFIRMATION_URL_MATCHER,
+            WebSecurityConfig.ACCOUNT_DELETED_CONFIRMATION_URL_MATCHER
+    );
     private final AuthService authService;
     private final UserDetailsService userDetailsService;
     @Value("${cookie.name}")
@@ -66,8 +80,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        final String requestURI = request.getRequestURI();
-        return URL_MATCHERS.contains(requestURI);
+        String uri = request.getRequestURI();
+
+        boolean isPublicUrl = URL_MATCHERS.stream().anyMatch(uri::equals);
+        boolean isStaticResource = PathRequest.toStaticResources().atCommonLocations().matches(request);
+
+        return isPublicUrl || isStaticResource;
     }
 
     private Optional<String> getJwtFromCookie(HttpServletRequest request) {
