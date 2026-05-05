@@ -15,6 +15,7 @@ import java.util.UUID;
 public class EmailServiceImpl implements EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
     private final JavaMailSender javaMailSender;
+    private final SimpleMailMessage message = new SimpleMailMessage();
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -24,14 +25,46 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendEmail(final String to, final UUID token) {
-        SimpleMailMessage message = new SimpleMailMessage();
-
         message.setFrom(sender);
         message.setTo(to);
         message.setSubject("Verify your account");
         message.setText("To verify your account please click the link below:\nhttp://localhost:8080" + WebSecurityConfig.ACCOUNT_VERIFICATION_URL_MATCHER + "?token=" + token);
 
         javaMailSender.send(message);
-        logger.info("[EMAIL] : Email successfully sent to {}", to);
+        logger.info("[EMAIL] : Email successfully sent to {} with activation token {}", to, token);
+    }
+
+    @Override
+    public void sendConfirmationEmail(final String to, final UUID token) {
+        message.setFrom(sender);
+        message.setTo(to);
+        message.setSubject("Confirm your new email address");
+        message.setText("To confirm your new email address please click the link below:\nhttp://localhost:8080" + WebSecurityConfig.EMAIL_CHANGE_CONFIRMATION_URL_MATCHER + "?token=" + token);
+
+        javaMailSender.send(message);
+        logger.info("[EMAIL] : Email successfully sent to {} with email change token {}", to, token);
+    }
+
+    @Override
+    public void sendConfirmationPassword(String to, UUID token) {
+        message.setFrom(sender);
+        message.setTo(to);
+        message.setSubject("Confirm your new password");
+        message.setText("To confirm your new password please click the link below:\nhttp://localhost:8080" + WebSecurityConfig.PASSWORD_CHANGE_CONFIRMATION_URL_MATCHER + "?token=" + token);
+
+        javaMailSender.send(message);
+        logger.info("[EMAIL] : Email successfully sent to {} with password change token {}", to, token);
+    }
+
+    @Override
+    public void sendConfirmationDelete(String to) {
+        message.setFrom(sender);
+        message.setTo(to);
+        message.setSubject("Account deletion status");
+        message.setText("The account associated with the email address " + to + " has been successfully deleted." +
+                " All data formerly associated with the account is permanently deleted.");
+
+        javaMailSender.send(message);
+        logger.info("[EMAIL] : Email successfully sent to {} to confirm account deletion", to);
     }
 }
