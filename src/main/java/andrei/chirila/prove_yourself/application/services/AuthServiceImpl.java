@@ -1,16 +1,18 @@
 package andrei.chirila.prove_yourself.application.services;
 
 import andrei.chirila.prove_yourself.application.mappers.AuthMapper;
+import andrei.chirila.prove_yourself.domain.EmailChangeToken;
+import andrei.chirila.prove_yourself.domain.PasswordChangeToken;
 import andrei.chirila.prove_yourself.domain.Role;
 import andrei.chirila.prove_yourself.domain.User;
 import andrei.chirila.prove_yourself.domain.UserRegisteredEvent;
 import andrei.chirila.prove_yourself.domain.UserRepository;
-import andrei.chirila.prove_yourself.domain.exceptions.AccountActivationTokenNotFoundException;
-import andrei.chirila.prove_yourself.domain.exceptions.UserAlreadyVerifiedException;
-import andrei.chirila.prove_yourself.domain.exceptions.UserNotFoundException;
-import andrei.chirila.prove_yourself.domain.exceptions.UserNotVerifiedException;
+import andrei.chirila.prove_yourself.domain.exceptions.ElErrorMessage;
+import andrei.chirila.prove_yourself.domain.exceptions.ElException;
 import andrei.chirila.prove_yourself.domain.services.AccountActivationTokenService;
 import andrei.chirila.prove_yourself.domain.services.AuthService;
+import andrei.chirila.prove_yourself.domain.services.EmailChangeTokenService;
+import andrei.chirila.prove_yourself.domain.services.PasswordChangeTokenService;
 import andrei.chirila.prove_yourself.domain.services.TokenService;
 import andrei.chirila.prove_yourself.infrastructure.dtos.CreateUserDto;
 import andrei.chirila.prove_yourself.infrastructure.dtos.LoginRequestDto;
@@ -29,6 +31,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,14 +46,18 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final ApplicationEventPublisher publisher;
     private final AccountActivationTokenService activationTokenService;
+    private final PasswordChangeTokenService passwordChangeTokenService;
+    private final EmailChangeTokenService emailChangeTokenService;
 
-    public AuthServiceImpl(UserRepository userRepository, TokenService tokenService, PasswordEncoder passwordEncoder, AuthenticationConfiguration authenticationConfiguration, ApplicationEventPublisher publisher, AccountActivationTokenService activationTokenService) {
+    public AuthServiceImpl(UserRepository userRepository, TokenService tokenService, PasswordEncoder passwordEncoder, AuthenticationConfiguration authenticationConfiguration, ApplicationEventPublisher publisher, AccountActivationTokenService activationTokenService, PasswordChangeTokenService passwordChangeTokenService, EmailChangeTokenService emailChangeTokenService) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationConfiguration = authenticationConfiguration;
         this.publisher = publisher;
         this.activationTokenService = activationTokenService;
+        this.passwordChangeTokenService = passwordChangeTokenService;
+        this.emailChangeTokenService = emailChangeTokenService;
     }
 
     @Override
@@ -59,10 +67,14 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         createUser.setPassword(passwordEncoder.encode(createUserDto.password()));
         createUser.setEmailVerified(false);
         createUser.setRole(Role.USER);
+        createUser.setLanguage("english");
+        createUser.setTheme("light");
+        createUser.setDateFormat("MM/DD/YYYY");
+        createUser.setProfileVisibility("private");
+        createUser.setProfileDiscoverable("no");
         final User user = userRepository.save(createUser);
         logger.info("[USER] : User successfully created with id {}", user.getId());
         UUID activationToken = activationTokenService.generateToken(user.getEmail());
-        logger.info("[ACCOUNT ACTIVATION TOKEN] : Account activation token successfully generated for user with email {} ", user.getEmail());
         publisher.publishEvent(new UserRegisteredEvent(user.getEmail(), activationToken));
     }
 
@@ -70,7 +82,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     public User getUser(final UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {
                     logger.error("[USER] : User with id {} not found", id);
-                    return new UserNotFoundException("User with id " + id + " not found");
+                    return new ElException(ElErrorMessage.USER_NOT_FOUND);
                 });
     }
 
@@ -80,12 +92,12 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         Optional<User> user = userRepository.findByEmail(activationTokenService.findByToken(activationToken));
         if (user.isEmpty()) {
             logger.error("[ACCOUNT ACTIVATION TOKEN]: User with email {} doesn't have a generated activation token", activationTokenService.findByToken(activationToken));
-            throw new AccountActivationTokenNotFoundException("User with email " + activationTokenService.findByToken(activationToken) + " doesn't have a generated activation token");
+            throw new ElException(ElErrorMessage.ACCOUNT_ACTIVATION_TOKEN_NOT_FOUND);
         }
 
         if (user.get().isEmailVerified()) {
             logger.error("[USER] : User with id {} is already active", user.get().getId());
-            throw new UserAlreadyVerifiedException("User with id " + user.get().getId() + " is already active");
+            throw new ElException(ElErrorMessage.USER_ALREADY_VERIFIED);
         }
 
         user.get().setEmailVerified(true);
@@ -98,17 +110,17 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         Optional<User> user = userRepository.findByEmail(loginRequestDto.email());
         if (user.isEmpty()) {
             logger.error("[USER] : Error while trying to login, no account is associated with the email {}", loginRequestDto.email());
-            throw new UserNotFoundException("No account is associated with the email " + loginRequestDto.email());
+            throw new ElException(ElErrorMessage.USER_NOT_FOUND);
         }
 
         if (!user.get().isEmailVerified()) {
-            logger.error("[USER] : Error while trying to login, user not verified", new UserNotVerifiedException("User not verified"));
-            throw new UserNotVerifiedException("User not verified");
+            logger.error("[USER] : Error while trying to login, user not verified", new ElException(ElErrorMessage.USER_NOT_VERIFIED));
+            throw new ElException(ElErrorMessage.USER_NOT_VERIFIED);
         }
 
         if (!passwordEncoder.matches(loginRequestDto.password(), user.get().getPassword())) {
             logger.error("[USER] : Error while trying to login, bad credentials", new BadCredentialsException("Bad credentials"));
-            throw new BadCredentialsException("Bad credentials");
+            throw new ElException(ElErrorMessage.BAD_REQUEST);
         }
 
         try {
@@ -138,7 +150,45 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         return userRepository.findByEmail(username)
                 .orElseThrow(() -> {
                     logger.error("[USER] : User not found with email {}", username);
-                    return new UsernameNotFoundException("User not found");
+                    return new ElException(ElErrorMessage.BAD_CREDENTIALS);
                 });
+    }
+
+    @Override
+    @Transactional
+    public void confirmChangedPassword(UUID token) {
+        PasswordChangeToken passwordChangeToken = this.passwordChangeTokenService.findByToken(token);
+
+        if (passwordChangeToken.getExpirationDate().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
+            logger.error("[PASSWORD CHANGE TOKEN] : Password change token {} is expired", token);
+            throw new ElException(ElErrorMessage.PASSWORD_CHANGE_TOKEN_IS_EXPIRED);
+        }
+
+        this.userRepository.findByEmail(passwordChangeToken.getUserEmail())
+                        .ifPresent(u -> {
+                            u.setPassword(passwordChangeToken.getPendingPassword());
+                            this.userRepository.save(u);
+                        });
+        logger.info("[USER]: User with email {} successfully changed their password", passwordChangeToken.getUserEmail());
+        this.passwordChangeTokenService.deleteToken(token);
+    }
+
+    @Override
+    @Transactional
+    public void confirmChangedEmail(UUID token) {
+        EmailChangeToken emailChangeToken = this.emailChangeTokenService.findByToken(token);
+
+        if (emailChangeToken.getExpirationDate().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
+            logger.error("[EMAIL CHANGE TOKEN] : Email change token {} is expired", token);
+            throw new ElException(ElErrorMessage.EMAIL_CHANGE_TOKEN_IS_EXPIRED);
+        }
+
+        this.userRepository.findByEmail(emailChangeToken.getCurrentEmail())
+                .ifPresent(u -> {
+                    u.setEmail(emailChangeToken.getPendingEmail());
+                    this.userRepository.save(u);
+                });
+        logger.info("[USER] : User with email {} successfully changed email to {}", emailChangeToken.getCurrentEmail(), emailChangeToken.getPendingEmail());
+        this.emailChangeTokenService.deleteToken(token);
     }
 }
