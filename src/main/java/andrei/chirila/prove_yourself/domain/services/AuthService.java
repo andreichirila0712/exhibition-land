@@ -13,4 +13,6 @@ public interface AuthService {
     void createUser(CreateUserDto createUserDto);
     User getUser(UUID id);
     void activateAccount(UUID activationToken);
+    void confirmChangedPassword(UUID token);
+    void confirmChangedEmail(UUID token);
 }

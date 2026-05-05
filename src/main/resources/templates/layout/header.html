@@ -1,16 +1,7 @@
-<header th:fragment="header" class="navbar">
-    <section class="navbar-section">
-        <h2 class="text-left" th:value="'Hello, ' + ${name}">Hello!</h2>
-    </section>
-    <section class="navbar-section">
-        <a href="/presentation-dashboard">Your presentations</a>
-        <div class="dropdown dropdown-right">
-            <a href="#" class="btn btn-link dropdown-toggle" tabindex="0">More <i class="icon icon-caret"></i></a>
-            <ul class="menu">
-                <li class="menu-item"><a href="#">Profile</a></li>
-                <li class="menu-item"><a href="#">Settings</a></li>
-                <li class="menu-item"><a href="#">Logout</a></li>
-            </ul>
-        </div>
-    </section>
+<header class="container" th:fragment="header-nav">
+    <nav>
+        <ul>
+            <li><a th:href="${homePath}" role="button">Home</a></li>
+        </ul>
+    </nav>
 </header>

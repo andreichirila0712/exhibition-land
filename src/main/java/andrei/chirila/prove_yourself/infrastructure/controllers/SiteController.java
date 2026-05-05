@@ -1,16 +1,25 @@
 package andrei.chirila.prove_yourself.infrastructure.controllers;
 
+import andrei.chirila.prove_yourself.domain.services.UserService;
 import andrei.chirila.prove_yourself.infrastructure.config.ApiConfig;
 import andrei.chirila.prove_yourself.infrastructure.config.WebSecurityConfig;
+import andrei.chirila.prove_yourself.infrastructure.dtos.UserSettingsDto;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.FragmentsRendering;
 
-@RequestMapping(ApiConfig.API_BASE_PATH)
 @Controller
+@RequestMapping(ApiConfig.API_BASE_PATH)
 public class SiteController {
+    private final UserService userService;
+
+    public SiteController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/welcome")
     public String welcome(Model model) {
@@ -50,7 +59,33 @@ public class SiteController {
     }
 
     @GetMapping("/settings")
-    public String settings() {
+    public String settings(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        model.addAttribute("homePath", WebSecurityConfig.HOME_URL_MATCHER);
+        model.addAttribute("updateLanguagePath", ApiConfig.API_BASE_PATH + "/user/update-language");
+        model.addAttribute("updateThemePath", ApiConfig.API_BASE_PATH + "/user/update-theme");
+        model.addAttribute("updateDateFormatPath", ApiConfig.API_BASE_PATH + "/user/update-date-format");
+        model.addAttribute("updateVisibilityPath", ApiConfig.API_BASE_PATH + "/user/update-visibility");
+        model.addAttribute("updateDiscoverabilityPath", ApiConfig.API_BASE_PATH + "/user/update-discoverability");
+        model.addAttribute("changeEmailPath", ApiConfig.API_BASE_PATH + "/user/change-email");
+        model.addAttribute("changePasswordPath", ApiConfig.API_BASE_PATH + "/user/change-password");
+        model.addAttribute("deleteAccountPath", ApiConfig.API_BASE_PATH + "/user/delete-account");
+        model.addAttribute("checkCurrentPasswordPath", ApiConfig.API_BASE_PATH + "/user/check-current-password");
+
+        UserSettingsDto userSettingsDto = this.userService.getUserSettings(userDetails.getUsername());
+        model.addAttribute("languagePreference", userSettingsDto.language());
+        model.addAttribute("themePreference", userSettingsDto.theme());
+        model.addAttribute("dateFormatPreference", userSettingsDto.dateFormat());
+        model.addAttribute("profileVisibilityPreference", userSettingsDto.profileVisibility());
+        model.addAttribute("profileDiscoverablePreference", userSettingsDto.profileDiscoverable());
+        model.addAttribute("currentEmail", userDetails.getUsername());
+
         return "site/settings";
+    }
+
+    @GetMapping("/account-deleted")
+    public String accountDeleted(Model model) {
+        model.addAttribute("welcomePage", WebSecurityConfig.WELCOME_URL_MATCHER);
+
+        return "site/account-deleted-confirmation";
     }
 }

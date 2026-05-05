@@ -25,7 +25,7 @@ public class User implements UserDetails {
     @Column(name = "name")
     private String name;
     @Column(name = "username", unique = true)
-    private String username;
+    private String userName;
     @Column(name = "email", unique = true)
     private String email;
     @Column(name = "password")
@@ -39,6 +39,16 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = true)
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "language")
+    private String language;
+    @Column(name = "theme")
+    private String theme;
+    @Column(name = "date_format")
+    private String dateFormat;
+    @Column(name = "profile_visibility")
+    private String profileVisibility;
+    @Column(name = "profile_discoverable")
+    private String profileDiscoverable;
 
     public User() {}
 
@@ -59,8 +69,9 @@ public class User implements UserDetails {
         this.name = name;
     }
 
+    @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
@@ -83,8 +94,8 @@ public class User implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {
@@ -138,5 +149,45 @@ public class User implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
+    public String getProfileVisibility() {
+        return profileVisibility;
+    }
+
+    public void setProfileVisibility(String profileVisibility) {
+        this.profileVisibility = profileVisibility;
+    }
+
+    public String getProfileDiscoverable() {
+        return profileDiscoverable;
+    }
+
+    public void setProfileDiscoverable(String profileDiscoverable) {
+        this.profileDiscoverable = profileDiscoverable;
     }
 }

@@ -6,6 +6,7 @@ import andrei.chirila.prove_yourself.infrastructure.filters.JwtAuthenticationFil
 import jakarta.servlet.http.HttpServletResponse;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -64,13 +65,17 @@ public class WebSecurityConfig {
     public static final String LOGIN_URL_MATCHER = ApiConfig.API_BASE_PATH  + "/login";
     public static final String PRIVACY_POLICY_URL_MATCHER = ApiConfig.API_BASE_PATH + "/privacy-policy";
     public static final String TERMS_OF_SERVICE_URL_MATCHER = ApiConfig.API_BASE_PATH + "/tos";
+    public static final String EMAIL_CHANGE_CONFIRMATION_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/confirm-email-change";
+    public static final String PASSWORD_CHANGE_CONFIRMATION_URL_MATCHER = ApiConfig.API_BASE_PATH + "/auth/confirm-password-change";
+    public static final String ACCOUNT_DELETED_CONFIRMATION_URL_MATCHER = ApiConfig.API_BASE_PATH + "/account-deleted";
     final String BASE_URL_MATCHER = ApiConfig.API_BASE_PATH + "/**";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws  Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/vendor/**").permitAll()
                         .requestMatchers(HttpMethod.GET, WELCOME_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.POST, LOGIN_AUTH_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.GET, REGISTRATION_URL_MATCHER).permitAll()
@@ -79,6 +84,9 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, LOGIN_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.GET, PRIVACY_POLICY_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.GET, TERMS_OF_SERVICE_URL_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.GET, EMAIL_CHANGE_CONFIRMATION_URL_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.GET, PASSWORD_CHANGE_CONFIRMATION_URL_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.GET, ACCOUNT_DELETED_CONFIRMATION_URL_MATCHER).permitAll()
                         .requestMatchers(BASE_URL_MATCHER).authenticated()
                         .anyRequest().denyAll()
                 )
