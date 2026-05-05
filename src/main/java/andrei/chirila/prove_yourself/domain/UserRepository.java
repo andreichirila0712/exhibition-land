@@ -8,10 +8,5 @@ public interface UserRepository {
     User save(User user);
     Optional<User> findById(UUID id);
     boolean hasVerifiedEmail(String email);
-
-//    User findByUsername(String username);
-//    boolean existsByUsername(String username);
-//    boolean existsByEmail(String email);
-//    @NativeQuery("SELECT u.email_verified FROM Users u WHERE u.email = :email")
-//    boolean checkActiveStatusByEmail(String email);
+    void deleteUser(User user);
 }
