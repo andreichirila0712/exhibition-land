@@ -8,4 +8,5 @@ public interface AccountActivationTokenRepository {
     void save(AccountActivationToken activationToken);
     void removeActivationToken(UUID token);
     Optional<String> findUserEmailByToken(UUID token);
+    void deleteByUserEmail(String email);
 }

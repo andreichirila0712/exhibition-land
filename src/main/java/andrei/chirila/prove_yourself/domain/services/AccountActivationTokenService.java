@@ -1,7 +1,5 @@
 package andrei.chirila.prove_yourself.domain.services;
 
-import andrei.chirila.prove_yourself.domain.AccountActivationToken;
-
 import java.util.UUID;
 
 public interface AccountActivationTokenService {
@@ -9,4 +7,5 @@ public interface AccountActivationTokenService {
     UUID findByEmail(String email);
     String findByToken(UUID token);
     void deleteToken(UUID token);
+    void deleteByUserEmail(String email);
 }

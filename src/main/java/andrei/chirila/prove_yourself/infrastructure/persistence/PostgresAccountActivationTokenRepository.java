@@ -10,4 +10,5 @@ public interface PostgresAccountActivationTokenRepository extends JpaRepository<
     Optional<AccountActivationToken> findByUserEmail(String email);
     Optional<AccountActivationToken> findByToken(UUID token);
     void deleteByToken(UUID token);
+    void deleteByUserEmail(String email);
 }
