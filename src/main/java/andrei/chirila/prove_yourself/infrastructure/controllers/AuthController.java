@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.FragmentsRendering;
 
@@ -70,6 +71,24 @@ public class AuthController {
         model.addAttribute("welcomePage", WebSecurityConfig.WELCOME_URL_MATCHER);
 
         return "site/verification";
+    }
+
+    @GetMapping("/confirm-password-change")
+    public String confirmPasswordChange(@RequestParam UUID token, Model model) {
+        this.authService.confirmChangedPassword(token);
+
+        model.addAttribute("welcomePage", WebSecurityConfig.WELCOME_URL_MATCHER);
+
+        return "site/password-change-confirmation";
+    }
+
+    @GetMapping("/confirm-email-change")
+    public String confirmEmailChange(@RequestParam UUID token, Model model) {
+        this.authService.confirmChangedEmail(token);
+
+        model.addAttribute("welcomePage", WebSecurityConfig.WELCOME_URL_MATCHER);
+
+        return "site/email-change-confirmation";
     }
 
     private ResponseCookie createAuthCookie(String token) {
