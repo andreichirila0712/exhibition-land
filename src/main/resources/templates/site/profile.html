@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=1.0">
+    <script th:src="@{/vendor/htmx.min.js}"></script>
+    <script th:src="@{/vendor/_hyperscript.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/vaadin/style.css}">
+    <script type="module" th:src="@{/vaadin/vaadin-bundle.js}"></script>
+    <title>Profile</title>
+</head>
+<body hx-ext="response-targets">
+<vaadin-app-layout>
+    <div slot="navbar">
+        <vaadin-horizontal-layout theme="spacing padding">
+            <vaadin-icon icon="vaadin:home"></vaadin-icon>
+            <a th:href="${homePath}">Home</a>
+            <h4 slot="end">Avatar</h4>
+            <h4 slot="end">Name</h4>
+        </vaadin-horizontal-layout>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100%; padding: var(--lumo-space-m)">
+        <vaadin-card style="width: 400px; align-items: center;" theme="outlined">
+            <div slot="title">Profile</div>
+            <form id="profile-form"
+                  th:hx-patch="${updateProfilePath}"
+                  hx-target="#success"
+                  _="on htmx:beforeRequest add @disabled to #save-changes-btn then remove @hidden from #progress
+                 on htmx:afterRequest remove @disabled from #save-changes-btn then add @hidden to  #progress"
+                  hx-swap="innerHTML"
+            >
+                <vaadin-form-layout style="width: 100%;">
+                    <vaadin-form-row>
+                        <vaadin-text-field style="width: 100%;" label="Name"
+                                           name="name"
+                        ></vaadin-text-field>
+                    </vaadin-form-row>
+                    <vaadin-form-row>
+                        <vaadin-text-field style="width: 100%;" label="Username"
+                                           name="username"
+                        ></vaadin-text-field>
+                    </vaadin-form-row>
+                    <vaadin-form-row>
+                        <vaadin-text-area label="About"
+                                          clear-button-visible
+                                          style="width: 100%;"
+                                          name="about"
+                        ></vaadin-text-area>
+                    </vaadin-form-row>
+                    <vaadin-form-row>
+                        <vaadin-text-field label="Location"
+                                           style="width: 100%;"
+                                           name="location"
+                        ></vaadin-text-field>
+                    </vaadin-form-row>
+                    <vaadin-form-row>
+                        <vaadin-text-field label="Website"
+                                           style="width: 100%;"
+                                           type="url"
+                                           th:pattern="'https://.*'"
+                                           name="website"
+                        ></vaadin-text-field>
+                    </vaadin-form-row>
+                </vaadin-form-layout>
+            </form>
+            <label for="avatar-upload"
+                   style="
+                       color: var(--lumo-secondary-text-color);
+                       font-weight: 500;
+                       font-size: var(--lumo-font-size-s);
+                       font-family: var(--lumo-font-family);
+                       line-height: 1;
+                       padding-inline: calc(var(--lumo-border-radius-m) / 4) 1em;
+                       padding-bottom: 0.5em;
+                       overflow: hidden;
+                       white-space: nowrap;
+                       text-overflow: ellipsis;
+                       box-sizing: border-box;
+"
+            >Avatar</label>
+            <vaadin-vertical-layout>
+                <vaadin-upload
+                        id="avatar-upload"
+                        th:target="${avatarUploadPath}"
+                        max-files="1"
+                        accept="images/png, images/jpeg"
+                        style="width: 100%;"
+                ></vaadin-upload>
+            </vaadin-vertical-layout>
+            <vaadin-horizontal-layout theme="spacing">
+                <vaadin-button theme="primary" id="save-changes-btn" th:_="'on click call #profile-form.requestSubmit()'">Save changes</vaadin-button>
+                <vaadin-button theme="tertiary" _="on click reset #profile-form">Clear changes</vaadin-button>
+            </vaadin-horizontal-layout>
+            <vaadin-progress-bar indeterminate hidden id="progress"></vaadin-progress-bar>
+        </vaadin-card>
+        <div id="success"></div>
+        <div id="error"></div>
+    </div>
+</vaadin-app-layout>
+</body>
+</html>
