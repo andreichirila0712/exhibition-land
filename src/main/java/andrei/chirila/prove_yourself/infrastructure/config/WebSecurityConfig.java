@@ -76,6 +76,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/vendor/**").permitAll()
+                        .requestMatchers("/vaadin/**").permitAll()
                         .requestMatchers(HttpMethod.GET, WELCOME_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.POST, LOGIN_AUTH_URL_MATCHER).permitAll()
                         .requestMatchers(HttpMethod.GET, REGISTRATION_URL_MATCHER).permitAll()
