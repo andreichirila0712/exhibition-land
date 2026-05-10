@@ -1,6 +1,7 @@
 package andrei.chirila.prove_yourself.infrastructure.controllers;
 
 import andrei.chirila.prove_yourself.domain.services.UserService;
+import andrei.chirila.prove_yourself.domain.validations.ValidFileType;
 import andrei.chirila.prove_yourself.infrastructure.config.ApiConfig;
 import andrei.chirila.prove_yourself.infrastructure.config.WebSecurityConfig;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping(ApiConfig.API_BASE_PATH + "/user")
@@ -92,5 +94,11 @@ public class UserController {
         response.addHeader("HX-Redirect", WebSecurityConfig.ACCOUNT_DELETED_CONFIRMATION_URL_MATCHER);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/update-profile")
+    public String updateProfile(@RequestParam String name, @RequestParam String username, @AuthenticationPrincipal UserDetails userDetails) {
+
+        return "fragments/modals :: update-profile";
     }
 }

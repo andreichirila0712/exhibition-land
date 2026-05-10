@@ -252,3 +252,15 @@
         <p>Something went wrong and the operation failed. Please try again later.</p>
     </article>
 </dialog>
+<!--PROFILE-->
+<dialog id="update-profile" th:fragment="update-profile">
+    <article>
+        <header>
+            <div th:replace="~{layout/modal-button-response :: close-btn}"></div>
+            <p style="display: flex; justify-content: center;">
+                Profile updated
+            </p>
+        </header>
+        <p>Your profile has been updated successfully.</p>
+    </article>
+</dialog>

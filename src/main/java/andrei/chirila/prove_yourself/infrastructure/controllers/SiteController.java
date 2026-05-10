@@ -88,4 +88,12 @@ public class SiteController {
 
         return "site/account-deleted-confirmation";
     }
+
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        model.addAttribute("homePath", WebSecurityConfig.HOME_URL_MATCHER);
+        model.addAttribute("updateProfilePath", ApiConfig.API_BASE_PATH + "/user/update-profile");
+
+        return "site/profile";
+    }
 }
