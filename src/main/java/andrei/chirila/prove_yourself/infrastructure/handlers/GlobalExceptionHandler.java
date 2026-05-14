@@ -19,107 +19,108 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(ElException.class)
-    public String handleElException(ElException ex, HttpServletResponse response) {
+    public ResponseEntity<String> handleElException(ElException ex, HttpServletResponse response) {
         final ElErrorMessage errorMessage = ex.getErrorMessage();
 
         switch (errorMessage) {
             case USER_NOT_FOUND -> {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
-                return "fragments/shared :: nothing"; // TODO: implement when switched to user branch
+                return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.USER_NOT_FOUND));
             }
 
             case USER_ALREADY_VERIFIED -> {
-                response.setStatus(HttpServletResponse.SC_CONFLICT);
-                return "fragment/shared :: nothing";
+                return ResponseEntity.status(HttpServletResponse.SC_CONFLICT)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.USER_ALREADY_VERIFIED));
             }
 
             case USER_NOT_VERIFIED -> {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return "fragment/shared :: nothing";
+                return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.USER_NOT_VERIFIED));
             }
 
             case EMAIL_ALREADY_EXISTS -> {
-                response.setStatus(HttpServletResponse.SC_CONFLICT);
-
-                return "fragments/modals :: email-sent-error-modal";
+                return ResponseEntity.status(HttpServletResponse.SC_CONFLICT)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.EMAIL_ALREADY_EXISTS));
             }
 
             case ACCOUNT_ACTIVATION_TOKEN_ALREADY_EXISTS -> {
-                response.setStatus(HttpServletResponse.SC_CONFLICT);
-
-                return "fragments/shared :: nothing";
+                return ResponseEntity.status(HttpServletResponse.SC_CONFLICT)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.ACCOUNT_ACTIVATION_TOKEN_ALREADY_EXISTS));
             }
 
             case ACCOUNT_ACTIVATION_TOKEN_NOT_FOUND -> {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
-                return "fragments/shared :: nothing";
+                return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.ACCOUNT_ACTIVATION_TOKEN_NOT_FOUND));
             }
 
             case EMAIL_CHANGE_TOKEN_NOT_FOUND -> {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
-                return "fragments/modals :: email-token-not-found";
+                return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.EMAIL_CHANGE_TOKEN_NOT_FOUND));
             }
 
             case EMAIL_CHANGE_TOKEN_ALREADY_EXISTS -> {
-                response.setStatus(HttpServletResponse.SC_CONFLICT);
-
-                return "fragments/modals :: email-token-conflict";
+                return ResponseEntity.status(HttpServletResponse.SC_CONFLICT)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.EMAIL_CHANGE_TOKEN_ALREADY_EXISTS));
             }
 
             case EMAIL_CHANGE_TOKEN_IS_EXPIRED -> {
-                response.setStatus(HttpServletResponse.SC_GONE);
-
-                return "fragments/modals :: email-token-expired";
-            }
-
-            case EMAIL_CHANGE_TOKEN_NO_EMAIL_ASSOCIATED -> {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // TODO: has to go once cascade deletion...
-
-                return "fragments/modals :: email-token-internal";
+                return ResponseEntity.status(HttpServletResponse.SC_GONE)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.EMAIL_CHANGE_TOKEN_IS_EXPIRED));
             }
 
             case PASSWORD_CHANGE_TOKEN_NOT_FOUND -> {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
-                return "fragments/modals :: password-token-not-found";
+                return ResponseEntity.status(HttpServletResponse.SC_NOT_FOUND)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.PASSWORD_CHANGE_TOKEN_NOT_FOUND));
             }
 
             case PASSWORD_CHANGE_TOKEN_ALREADY_EXISTS -> {
-                response.setStatus(HttpServletResponse.SC_CONFLICT);
-
-                return "fragments/modals :: password-token-conflict";
+                return ResponseEntity.status(HttpServletResponse.SC_CONFLICT)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.PASSWORD_CHANGE_TOKEN_ALREADY_EXISTS));
             }
 
             case PASSWORD_CHANGE_TOKEN_IS_EXPIRED -> {
-                response.setStatus(HttpServletResponse.SC_GONE);
-
-                return "fragments/modals :: password-token-expired";
-            }
-
-            case PASSWORD_CHANGE_TOKEN_NO_USER_ASSOCIATED -> {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // TODO: has to be deleted once the cascade delete is done
-
-                return "fragments/modals :: password-token-internal";
+                return ResponseEntity.status(HttpServletResponse.SC_GONE)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.PASSWORD_CHANGE_TOKEN_IS_EXPIRED));
             }
 
             case BAD_CREDENTIALS -> {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-                return "fragments/modals :: password-token-unauthorized";
+                return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.BAD_CREDENTIALS));
             }
 
             case DATA_INTEGRITY_VIOLATION -> {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+               return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                       .body(ElErrorMessage.getDescription(ElErrorMessage.DATA_INTEGRITY_VIOLATION));
+            }
 
-                return "fragments/modals :: db-operation-failed";
+            case USERNAME_IS_EMPTY -> {
+                return ResponseEntity.badRequest()
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.USERNAME_IS_EMPTY));
+            }
+
+            case USERNAME_ALREADY_EXISTS -> {
+                return ResponseEntity.status(HttpServletResponse.SC_CONFLICT)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.USERNAME_ALREADY_EXISTS));
+            }
+
+            case NAME_IS_EMPTY -> {
+                return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.NAME_IS_EMPTY));
+            }
+
+            case ABOUT_IS_TOO_LENGTHY -> {
+                return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.ABOUT_IS_TOO_LENGTHY));
+            }
+
+            case URL_DOES_NOT_MATCH_PATTERN -> {
+                return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST)
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.URL_DOES_NOT_MATCH_PATTERN));
             }
 
             default -> {
-                response.setHeader("HX-Trigger", "generalError");
-                return "";
+                return ResponseEntity.internalServerError()
+                        .body(ElErrorMessage.getDescription(ElErrorMessage.INTERNAL_SERVER_ERROR));
             }
         }
     }

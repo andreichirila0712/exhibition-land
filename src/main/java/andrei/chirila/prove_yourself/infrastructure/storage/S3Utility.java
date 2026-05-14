@@ -2,6 +2,7 @@ package andrei.chirila.prove_yourself.infrastructure.storage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -14,11 +15,14 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.UUID;
 
 @Component
 public class S3Utility {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
+    @Value("${bucket.name}")
+    private String bucket;
     Logger logger = LoggerFactory.getLogger(S3Utility.class);
 
     public S3Utility(S3Client s3Client, S3Presigner s3Presigner) {
@@ -26,7 +30,7 @@ public class S3Utility {
         this.s3Presigner = s3Presigner;
     }
 
-    public String uploadFile(String bucketName, String objectName, MultipartFile file) {
+    public String uploadFile(MultipartFile file, String name) {
         String contentType = file.getContentType();
 
         assert contentType != null;
@@ -38,25 +42,23 @@ public class S3Utility {
 
         try {
             PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(bucketName)
+                    .bucket(bucket)
                     .contentType(contentType)
-                    .key(objectName + extension)
+                    .key(name + "/" + file.getName() + extension)
                     .build();
 
-
             RequestBody body = RequestBody.fromBytes(file.getBytes());
-
             s3Client.putObject(request, body);
         } catch (IOException ex) {
             logger.error("Could not access file's content", ex);
         }
 
-        return objectName + extension;
+        return name + "/" + file.getName() + extension;
     }
 
-    public String createPresignedUrl(String bucketName, String objectName) {
+    public String createPresignedUrl(String objectName) {
         GetObjectRequest objectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket(bucket)
                 .key(objectName)
                 .build();
 
@@ -70,7 +72,8 @@ public class S3Utility {
         return presignedRequest.url().toExternalForm();
     }
 
-    public void deleteFile(String bucketName, String objectName) {
-        s3Client.deleteObject(b -> b.bucket(bucketName).key(objectName));
+    public void deleteFile(String objectName) {
+        s3Client.deleteObject(b -> b.bucket(bucket).key(objectName));
     }
+
 }

@@ -6,12 +6,16 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,13 +29,14 @@ public class User implements UserDetails {
     @Column(name = "name")
     private String name;
     @Column(name = "username", unique = true)
-    private String userName;
+    private String accountName;
     @Column(name = "email", unique = true)
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "profile_picture_url")
-    private String profilePictureUrl;
+    @Column(name = "images")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> images = new HashMap<>();
     @Column(name= "email_verified")
     private boolean emailVerified;
     //@OneToMany(mappedBy = "user")
@@ -49,6 +54,12 @@ public class User implements UserDetails {
     private String profileVisibility;
     @Column(name = "profile_discoverable")
     private String profileDiscoverable;
+    @Column(name = "about")
+    private String about = "";
+    @Column(name = "location")
+    private String location = "";
+    @Column(name = "website")
+    private String website = "";
 
     public User() {}
 
@@ -59,6 +70,10 @@ public class User implements UserDetails {
 
     public UUID getId() {
         return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -94,8 +109,12 @@ public class User implements UserDetails {
         return UserDetails.super.isEnabled();
     }
 
-    public void setUsername(String userName) {
-        this.userName = userName;
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public String getAccountName() {
+        return accountName;
     }
 
     public String getEmail() {
@@ -119,12 +138,12 @@ public class User implements UserDetails {
         return password;
     }
 
-    public String getProfilePictureUrl() {
-        return profilePictureUrl;
+    public Map<String, String> getImages() {
+        return images;
     }
 
-    public void setProfilePictureUrl(String profilePictureUrl) {
-        this.profilePictureUrl = profilePictureUrl;
+    public void setImage(String key, String value) {
+        this.images.put(key, value);
     }
 
     public boolean isEmailVerified() {
@@ -189,5 +208,29 @@ public class User implements UserDetails {
 
     public void setProfileDiscoverable(String profileDiscoverable) {
         this.profileDiscoverable = profileDiscoverable;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 }

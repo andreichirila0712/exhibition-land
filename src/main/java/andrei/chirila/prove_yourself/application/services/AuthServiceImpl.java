@@ -64,6 +64,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     @Transactional
     public void createUser(final CreateUserDto createUserDto) {
         final User createUser = AuthMapper.fromDto(createUserDto);
+        createUser.setAccountName(createUserDto.username());
         createUser.setPassword(passwordEncoder.encode(createUserDto.password()));
         createUser.setEmailVerified(false);
         createUser.setRole(Role.USER);

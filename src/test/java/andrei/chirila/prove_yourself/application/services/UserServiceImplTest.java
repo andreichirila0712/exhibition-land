@@ -11,6 +11,7 @@ import andrei.chirila.prove_yourself.domain.services.EmailChangeTokenService;
 import andrei.chirila.prove_yourself.domain.services.PasswordChangeTokenService;
 import andrei.chirila.prove_yourself.domain.services.UserService;
 import andrei.chirila.prove_yourself.infrastructure.dtos.UserSettingsDto;
+import andrei.chirila.prove_yourself.infrastructure.storage.S3Utility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,9 +20,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -44,6 +47,8 @@ public class UserServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
+    private S3Utility s3Utility;
+    @Mock
     private ApplicationEventPublisher publisher;
     private UserService service;
 
@@ -58,7 +63,7 @@ public class UserServiceImplTest {
 
     @BeforeEach
     void init() {
-        service = new UserServiceImpl(repository, emailChangeService, passwordChangeService, accountActivationService, passwordEncoder, publisher);
+        service = new UserServiceImpl(repository, emailChangeService, passwordChangeService, accountActivationService, passwordEncoder, s3Utility, publisher);
     }
 
     @Test
@@ -213,4 +218,102 @@ public class UserServiceImplTest {
         assertEquals(USER_EMAIL, accountDeleteEventCaptor.getValue().getUserEmail());
     }
 
+    @Test
+    void shouldUpdateProfile() {
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        user.setName("Test");
+        user.setAccountName("usertest");
+        user.setAbout("");
+        user.setLocation("");
+        user.setWebsite("");
+
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+        when(repository.findByAccountName(user.getAccountName())).thenReturn(Optional.of(user));
+        service.updateProfile(user.getName(), user.getAccountName(), "A new about", "New location", "www.test.com", USER_EMAIL);
+
+        verify(repository).save(argumentCaptor.capture());
+        assertEquals("A new about", argumentCaptor.getValue().getAbout());
+        assertEquals("New location", argumentCaptor.getValue().getLocation());
+        assertEquals("www.test.com", argumentCaptor.getValue().getWebsite());
+    }
+
+    @Test
+    void shouldThrowErrorIfNameIsBlank() {
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(ElException.class, () -> service.updateProfile("", "test", "test", "test", "test", USER_EMAIL));
+    }
+
+    @Test
+    void shouldThrowErrorIfUsernameIsBlank() {
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(ElException.class, () -> service.updateProfile("test", "", "test", "test", "test", USER_EMAIL));
+    }
+
+    @Test
+    void shouldThrowErrorIfUsernameIsTaken() {
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+        user.setEmail("test2@gmail.com");
+        when(repository.findByAccountName("existing")).thenReturn(Optional.of(user));
+
+        assertThrows(ElException.class, () -> service.updateProfile("test", "existing", "test", "test", "test", USER_EMAIL));
+    }
+
+    @Test
+    void shouldThrowErrorIfAboutIsTooLong() {
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+        when(repository.findByAccountName("test")).thenReturn(Optional.of(user));
+
+        assertThrows(ElException.class, () -> service.updateProfile("test", "test", "2".repeat(501), "test", "test", USER_EMAIL));
+    }
+
+    @Test
+    void shouldUploadAvatar() {
+        MockMultipartFile file = new MockMultipartFile("file", new byte[] {1, 2, 3, 4});
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        user.setId(UUID.randomUUID());
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+        when(s3Utility.uploadFile(file, user.getId().toString())).thenReturn("avatar-name.png");
+
+
+        service.uploadAvatar(file, USER_EMAIL);
+
+        verify(repository).save(argumentCaptor.capture());
+        assertEquals("avatar-name.png", argumentCaptor.getValue().getImages().get("avatar"));
+    }
+
+    @Test
+    void shouldReturnDefaultUrlToAvatarIfNoAvatarWasUploaded() {
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+
+        String result = this.service.getUrlToAvatar(USER_EMAIL);
+
+        assertEquals("https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png", result);
+    }
+
+    @Test
+    void shouldReturnPresignedUrlToAvatar() {
+        User user = new User();
+        user.setEmail(USER_EMAIL);
+        user.setImage("avatar", "object name");
+        when(repository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(user));
+        when(s3Utility.createPresignedUrl(user.getImages().get("avatar"))).thenReturn("https://some-presigned-url");
+
+        String result = this.service.getUrlToAvatar(USER_EMAIL);
+
+        assertEquals("https://some-presigned-url", result);
+    }
 }

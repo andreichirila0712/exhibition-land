@@ -22,7 +22,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        // TODO checking for username once I figure it out if I will keep it or not
         return postgresUserRepository.save(user);
     }
 
@@ -39,5 +38,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void deleteUser(User user) {
         this.postgresUserRepository.delete(user);
+    }
+
+    @Override
+    public Optional<User> findByAccountName(String username) {
+        return postgresUserRepository.findByAccountName(username);
     }
 }
