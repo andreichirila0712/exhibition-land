@@ -118,7 +118,7 @@ public class AuthServiceImplTest {
 
     @Test
     void shouldCreateUserWhenDataIsValid() {
-        CreateUserDto dto = new CreateUserDto("test@gmail.com", "Test", "test123");
+        CreateUserDto dto = new CreateUserDto("test@gmail.com", "Test", "test123", "test");
 
         when(userRepository.save(any())).thenReturn(new User(dto.name(), dto.email()));
         when(passwordEncoder.encode(any())).thenReturn(any());
