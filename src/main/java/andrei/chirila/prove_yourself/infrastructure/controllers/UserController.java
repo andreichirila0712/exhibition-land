@@ -2,6 +2,7 @@ package andrei.chirila.prove_yourself.infrastructure.controllers;
 
 import andrei.chirila.prove_yourself.domain.services.UserService;
 import andrei.chirila.prove_yourself.domain.validations.ValidFileType;
+import andrei.chirila.prove_yourself.domain.validations.ValidWebsiteUrl;
 import andrei.chirila.prove_yourself.infrastructure.config.ApiConfig;
 import andrei.chirila.prove_yourself.infrastructure.config.WebSecurityConfig;
 import jakarta.servlet.http.HttpServletResponse;
@@ -80,7 +81,7 @@ public class UserController {
     }
 
     @PostMapping("/delete-account")
-    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response, Model model) throws Exception {
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) throws Exception {
         this.service.deleteAccount(userDetails.getUsername());
         ResponseCookie cookie = ResponseCookie.from("auth-token", "")
                 .httpOnly(true)
@@ -97,8 +98,31 @@ public class UserController {
     }
 
     @PatchMapping("/update-profile")
-    public String updateProfile(@RequestParam String name, @RequestParam String username, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> updateProfile(@RequestParam String name,
+                                @RequestParam String username,
+                                @RequestParam String about,
+                                @RequestParam String location,
+                                @RequestParam @ValidWebsiteUrl String website,
+                                @AuthenticationPrincipal UserDetails userDetails) {
+        this.service.updateProfile(name, username, about, location, website, userDetails.getUsername());
 
-        return "fragments/modals :: update-profile";
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<?> uploadAvatar(@RequestParam("file") @ValidFileType MultipartFile file, @AuthenticationPrincipal UserDetails userDetails) {
+        if (file == null) {
+            return ResponseEntity.ok().build();
+        }
+        this.service.uploadAvatar(file, userDetails.getUsername());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/avatar")
+    public String avatar(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        model.addAttribute("avatarUrl", this.service.getUrlToAvatar(userDetails.getUsername()));
+
+        return "fragments/avatar :: avatar";
     }
 }

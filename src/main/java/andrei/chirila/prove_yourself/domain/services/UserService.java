@@ -1,8 +1,8 @@
 package andrei.chirila.prove_yourself.domain.services;
 
+import andrei.chirila.prove_yourself.domain.User;
 import andrei.chirila.prove_yourself.infrastructure.dtos.UserSettingsDto;
-
-import java.util.UUID;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     UserSettingsDto getUserSettings(String email);
@@ -14,4 +14,8 @@ public interface UserService {
     void changePassword(String email, String newPassword, String inputPassword);
     boolean checkPassword(String email, String password);
     void deleteAccount(String email);
+    void updateProfile(String name, String username, String about, String location, String website, String email);
+    void uploadAvatar(MultipartFile avatar, String email);
+    String getUrlToAvatar(String email);
+    User getUser(String email);
 }
