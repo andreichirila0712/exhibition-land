@@ -1,8 +1,10 @@
 package andrei.chirila.prove_yourself.infrastructure.controllers;
 
+import andrei.chirila.prove_yourself.application.mappers.UserMapper;
 import andrei.chirila.prove_yourself.domain.services.UserService;
 import andrei.chirila.prove_yourself.infrastructure.config.ApiConfig;
 import andrei.chirila.prove_yourself.infrastructure.config.WebSecurityConfig;
+import andrei.chirila.prove_yourself.infrastructure.dtos.UserProfileDto;
 import andrei.chirila.prove_yourself.infrastructure.dtos.UserSettingsDto;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -90,9 +92,19 @@ public class SiteController {
     }
 
     @GetMapping("/profile")
-    public String profile(Model model) {
+    public String profile(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("homePath", WebSecurityConfig.HOME_URL_MATCHER);
         model.addAttribute("updateProfilePath", ApiConfig.API_BASE_PATH + "/user/update-profile");
+        model.addAttribute("avatarUploadPath", ApiConfig.API_BASE_PATH + "/user/upload-avatar");
+        model.addAttribute("avatarUrl", this.userService.getUrlToAvatar(userDetails.getUsername()));
+        model.addAttribute("avatarRefreshPath", ApiConfig.API_BASE_PATH + "/user/avatar");
+
+        UserProfileDto profileDto = UserMapper.toDto(this.userService.getUser(userDetails.getUsername()));
+        model.addAttribute("name", profileDto.name());
+        model.addAttribute("username", profileDto.username());
+        model.addAttribute("about", profileDto.about());
+        model.addAttribute("location", profileDto.location());
+        model.addAttribute("website", profileDto.website());
 
         return "site/profile";
     }
